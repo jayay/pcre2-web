@@ -1,0 +1,17 @@
+{
+  "name": "pcre2-web",
+  "version": "0.1.0",
+  "description": "libpcre2 brought to the web using WASM.",
+  "main": "pcre2.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "libpcre2",
+    "pcre",
+    "regex",
+    "wasm"
+  ],
+  "author": "Jakob Jungmann",
+  "license": "BSD-3-Clause"
+}

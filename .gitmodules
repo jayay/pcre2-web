@@ -1,0 +1,6 @@
+[submodule "pcre2"]
+	path = pcre2
+	url = https://github.com/PhilipHazel/pcre2
+[submodule "wasi-libc"]
+	path = wasi-libc
+	url = https://github.com/WebAssembly/wasi-libc
