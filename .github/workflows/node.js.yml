@@ -30,10 +30,11 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - name: Show PATH variable
-      run: echo $PATH
     - name: append path for wasm-ld
       run: echo "/usr/lib/llvm-9/bin" >> $GITHUB_PATH
+    - name: Show PATH variable
+      run: echo $PATH
+    - run: llc --version
     - name: download compiler-rt
       run: sudo mkdir -p /usr/lib/llvm-10/lib/clang/10.0.0/lib/wasi/ && sudo wget -O /usr/lib/llvm-10/lib/clang/10.0.0/lib/wasi/libclang_rt.builtins-wasm32.a https://github.com/jedisct1/libclang_rt.builtins-wasm32.a
     - run: npm ci
