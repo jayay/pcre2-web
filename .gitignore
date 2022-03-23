@@ -1,4 +1,7 @@
-pkg/*.wasm
+pkg/*
 pcre2/src/config.h
 pcre2/src/pcre2.h
 pcre2/src/pcre2_chartables.h
+dist/*
+node_modules/*
+/.idea

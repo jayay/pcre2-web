@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "outDir": "./pkg",
+    "allowJs": false,
+    "target": "es6",
+    "removeComments": true,
+    "skipLibCheck": true,
+    "module": "commonjs",
+    "declaration": true,
+    "strictNullChecks": true,
+    "strict": true,
+    "alwaysStrict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitThis": true,
+    "noImplicitAny": true
+  },
+  "include": ["./src/**/*.ts"],
+  "exclude": ["node_modules", "pkg"]
+}
