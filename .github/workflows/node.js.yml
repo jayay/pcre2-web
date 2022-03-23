@@ -24,7 +24,7 @@ jobs:
       with:
         submodules: recursive
     - name: Install clang
-      run: sudo apt-get install clang
+      run: sudo apt-get install clang llvm
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
       with:
