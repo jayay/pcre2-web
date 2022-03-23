@@ -20,7 +20,7 @@ export default class PCRE2 {
         };
         // @ts-ignore
         this.memory = new Uint8Array(imp_wasm['memory']['buffer']);
-        WebAssembly.instantiateStreaming(wasm.buffer())
+        WebAssembly.instantiate(wasm.buffer(), { env: imp_wasm })
 
             .then(program => {
                 this.instance = program['instance'];
@@ -55,7 +55,7 @@ export default class PCRE2 {
         });
     }
 
-    test(subject: string, flags: number = 0) {
+    test(subject: string, flags = 0) {
         const exports = this.instance['exports'];
         const td = new TextDecoder();
         const te = new TextEncoder();

@@ -25,6 +25,7 @@
   "ignorePatterns": [
     "patches/*",
     "node_modules/*",
-    "pkg/*"
+    "pkg/*",
+    "dist/*"
   ]
 }
