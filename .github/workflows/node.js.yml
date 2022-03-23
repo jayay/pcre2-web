@@ -1,0 +1,43 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Node.js CI
+
+on:
+  push:
+    branches: [ '*' ]
+  pull_request:
+    branches: [ '*' ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-20.04
+
+    strategy:
+      matrix:
+        node-version: [12.x, 14.x, 16.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: recursive
+    - name: Install clang
+      run: sudo apt-get install clang llvm-12 lld-12
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - name: append path for wasm-ld
+      run: echo "/usr/lib/llvm-12/bin" >> $GITHUB_PATH
+    - name: Show PATH variable
+      run: echo $PATH
+    - run: llc --version
+    - name: download compiler-rt
+      run: sudo mkdir -p /usr/lib/llvm-12/lib/clang/12.0.0/lib/wasi/ && sudo wget -O /usr/lib/llvm-12/lib/clang/12.0.0/lib/wasi/libclang_rt.builtins-wasm32.a https://github.com/jedisct1/libclang_rt.builtins-wasm32.a/raw/master/precompiled/libclang_rt.builtins-wasm32.a
+    - run: npm ci
+    - run: npm run compile
+    - run: npm run build --if-present
+   # - run: npm test
