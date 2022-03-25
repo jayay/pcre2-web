@@ -1,32 +1,52 @@
-// @ts-ignore
-import * as wasm from "./out.wasm";
-
 const PCRE2_ERROR_NOMATCH = -1;
 export default class PCRE2 {
-    private regexp: string;
-    // @ts-ignore
-    private instance: WebAssembly.Instance;
-    // @ts-ignore
+    public regexp: string;
+    private readonly instance: WebAssembly.Instance;
     private memory: Uint8Array;
-    // @ts-ignore
-    private err_buf: number; // ptr
-    // @ts-ignore
-    private re_comp_ptr: number; // ptr
-    constructor(regexp: string) {
+    private readonly err_buf: number; // ptr
+    private readonly re_comp_ptr: number; // ptr
+
+    private constructor(regexp: string, instance: WebAssembly.Instance, memory: Uint8Array, err_buf: number, re_comp_ptr: number) {
         this.regexp = regexp;
+        this.instance = instance;
+        this.memory = memory;
+        this.err_buf = err_buf;
+        this.re_comp_ptr = re_comp_ptr;
+    }
+    static create(regexp: string): Promise<PCRE2> {
         const imp_wasm = {
         // @ts-ignore
-            memory: new WebAssembly['Memory']({'initial': 100}),
+            memory: new WebAssembly.Memory({'initial': 100}),
         };
         // @ts-ignore
-        this.memory = new Uint8Array(imp_wasm['memory']['buffer']);
-        WebAssembly.instantiate(wasm.buffer(), { env: imp_wasm })
+        const memory = new Uint8Array(imp_wasm.memory.buffer);
 
+        let file = './out.wasm';
+
+        let environment: string;
+        try {
+            window;
+            environment = 'browser';
+        } catch (e) {
+            environment = 'node'
+        }
+
+        let wasmBuffer = null;
+        if (environment === 'node') {
+            const fs = require('fs');
+            const path = require('path');
+            wasmBuffer = fs.readFileSync(path.resolve(__dirname, file));
+        } else {
+            // todo: resolve promise
+            wasmBuffer = fetch(file).then(response => response.arrayBuffer());
+        }
+
+        return WebAssembly.instantiate(wasmBuffer, { env: imp_wasm })
             .then(program => {
-                this.instance = program['instance'];
-                const exports = this.instance['exports'];
+                const instance = program['instance'];
+                const exports = instance['exports'];
                 // @ts-ignore
-                this.err_buf = exports.malloc(256);
+                const err_buf = exports.malloc(512);
                 // @ts-ignore
                 const err = exports.malloc(2);
                 // @ts-ignore
@@ -34,25 +54,25 @@ export default class PCRE2 {
 
                 const te = new TextEncoder();
                 const td = new TextDecoder();
-                const text_encoded = te.encode(this.regexp);
+                const text_encoded = te.encode(regexp);
                 // @ts-ignore
                 const re_ptr = exports.malloc(text_encoded.length);
-                this.memory.set(text_encoded, re_ptr);
-                if (!this.err_buf || !err || !err_offset) {
-                    throw new Error("Out of memory");
+                memory.set(text_encoded, re_ptr);
+                if (!err_buf || !err || !err_offset) {
+                    return Promise.reject(new Error("Out of memory"));
                 }
 
                 // @ts-ignore
-                this.re_comp_ptr = exports.pcre2_compile(re_ptr, text_encoded.length, 0, err, err_offset, 0);
-                if (this.re_comp_ptr === 0) {
+                const re_comp_ptr = exports.pcre2_compile_8(re_ptr, text_encoded.length, 0, err, err_offset, 0);
+                if (re_comp_ptr === 0) {
                     // @ts-ignore
-                    const err_len = exports.pcre2_get_error_message(err, this.err_buf, 256);
-                    const error = td.decode(this.memory.slice(this.err_buf, this.err_buf + err_len))
-                    throw new Error("Failed to compile regex at offset " + this.memory[err_offset] + ": " + error);
+                    // todo: memory[err] might be too short
+                    const err_len = exports.pcre2_get_error_message_8(memory[err], err_buf, 512);
+                    const error = td.decode(memory.slice(err_buf, err_buf + err_len))
+                    return Promise.reject(new Error("Failed to compile regex at offset " + memory[err_offset] + ": " + error));
                 }
-            }).catch(e => {
-            throw e
-        });
+                return new PCRE2(regexp, instance, memory, err_buf, re_comp_ptr);
+            });
     }
 
     test(subject: string, flags = 0) {
@@ -67,14 +87,14 @@ export default class PCRE2 {
         this.memory.set(subj_buf, subj_ptr);
 
         // @ts-ignore
-        const match_data = exports.pcre2_match_data_create_from_pattern(this.re_comp_ptr, 0);
+        const match_data = exports.pcre2_match_data_create_from_pattern_8(this.re_comp_ptr, 0);
 
         if (match_data === 0) {
             throw new Error("match_data is null");
         }
 
         // @ts-ignore
-        const rc = exports.pcre2_match(
+        const rc = exports.pcre2_match_8(
             this.re_comp_ptr,                /* the compiled pattern */
             subj_ptr,                       /* the subject string */
             subj_buf.length,                /* the length of the subject */
@@ -90,7 +110,7 @@ export default class PCRE2 {
             return false
         } else if (rc < 0) {
             // @ts-ignore
-            const err_len = exports.pcre2_get_error_message(rc, this.err_buf, 256);
+            const err_len = exports.pcre2_get_error_message_8(rc, this.err_buf, 256);
             throw new Error(td.decode(this.memory.slice(this.err_buf, this.err_buf + err_len)));
         }
 

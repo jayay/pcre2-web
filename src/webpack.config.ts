@@ -20,7 +20,8 @@ module.exports = {
     resolve: {
         alias: {
             // possibly a bug in webpack
-            env: false
+            env: false,
+            fs: false
         },
     },
 };

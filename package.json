@@ -6,8 +6,8 @@
   "main": "pcre2.js",
   "scripts": {
     "compile": "scripts/pcre2_compile.sh",
-    "build": "npx tsc -b -v && npx webpack --config src/webpack.config.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "npx tsc -b -v",
+    "test": "mocha"
   },
   "keywords": [
     "libpcre2",
