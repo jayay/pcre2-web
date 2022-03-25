@@ -1,3 +1,5 @@
+import {load_wasm_file} from './wasm_loader';
+
 const PCRE2_ERROR_NOMATCH = -1;
 export default class PCRE2 {
     public regexp: string;
@@ -21,28 +23,9 @@ export default class PCRE2 {
         // @ts-ignore
         const memory = new Uint8Array(imp_wasm.memory.buffer);
 
-        let file = './out.wasm';
-
-        let environment: string;
-        try {
-            window;
-            environment = 'browser';
-        } catch (e) {
-            environment = 'node'
-        }
-
-        let wasmBuffer = null;
-        if (environment === 'node') {
-            const fs = require('fs');
-            const path = require('path');
-            wasmBuffer = fs.readFileSync(path.resolve(__dirname, file));
-        } else {
-            // todo: resolve promise
-            wasmBuffer = fetch(file).then(response => response.arrayBuffer());
-        }
-
-        return WebAssembly.instantiate(wasmBuffer, { env: imp_wasm })
-            .then(program => {
+       return load_wasm_file( {env: imp_wasm})
+           .then(program => {
+                // @ts-ignore
                 const instance = program['instance'];
                 const exports = instance['exports'];
                 // @ts-ignore
