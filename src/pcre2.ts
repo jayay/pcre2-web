@@ -2,9 +2,9 @@ import {load_wasm_file} from './wasm_loader';
 
 const PCRE2_ERROR_NOMATCH = -1;
 export default class PCRE2 {
-    public regexp: string;
+    public readonly regexp: string;
     private readonly instance: WebAssembly.Instance;
-    private memory: Uint8Array;
+    private readonly memory: Uint8Array;
     private readonly err_buf: number; // ptr
     private readonly re_comp_ptr: number; // ptr
 
