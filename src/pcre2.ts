@@ -27,29 +27,35 @@ export default class PCRE2 {
                 // @ts-ignore
                 const instance = program.instance;
                 const exports = instance.exports;
-                const err_buf = exports.malloc(256);
-                const err = exports.malloc(2);
-                const err_offset = exports.malloc(4);
+                const err_buf_ptr = exports.malloc(256);
+                const err_ptr = exports.malloc(2);
+                const err_offset_ptr = exports.malloc(4);
 
                 const te = new TextEncoder();
                 const td = new TextDecoder();
                 const text_encoded = te.encode(regexp);
                 const re_ptr = exports.malloc(text_encoded.length);
-                memory.set(text_encoded, re_ptr);
 
-                if (!err_buf || !err || !err_offset) {
+                if (!err_buf_ptr || !err_ptr || !err_offset_ptr || !re_ptr) {
                     return Promise.reject(new Error("Out of memory"));
                 }
 
-                const re_comp_ptr = exports.pcre2_compile_8(re_ptr, text_encoded.length, 0, err, err_offset, 0);
+               memory.set(text_encoded, re_ptr);
+
+                const re_comp_ptr = exports.pcre2_compile_8(re_ptr, text_encoded.length, 0, err_ptr, err_offset_ptr, 0);
                 if (re_comp_ptr === 0) {
-                    const error_int = Buffer.from(memory.slice(err, err + 2)).readUInt16LE(0);
-                    const error_offset_int = Buffer.from(memory.slice(err_offset, err_offset + 4)).readInt32LE(0);
-                    const err_len = exports.pcre2_get_error_message_8(error_int, err_buf, 256);
-                    const error = td.decode(memory.slice(err_buf, err_buf + err_len))
-                    return Promise.reject(new Error("Failed to compile regex at offset " + error_offset_int + ": " + error));
+                    const error_int = Buffer.from(memory.slice(err_ptr, err_ptr + 2)).readUInt16LE(0);
+                    const error_offset_int = Buffer.from(memory.slice(err_offset_ptr, err_offset_ptr + 4)).readInt32LE(0);
+                    const err_len = exports.pcre2_get_error_message_8(error_int, err_buf_ptr, 256);
+                    const error = td.decode(memory.slice(err_buf_ptr, err_buf_ptr + err_len))
+                    const message = "Failed to compile regex at offset " + error_offset_int + ": " + error;
+                    exports.free(err_buf_ptr);
+                    exports.free(err_ptr);
+                    exports.free(err_offset_ptr);
+                    exports.free(re_ptr);
+                    return Promise.reject(new Error(message));
                 }
-                return new PCRE2(regexp, instance, memory, err_buf, re_comp_ptr);
+                return new PCRE2(regexp, instance, memory, err_buf_ptr, re_comp_ptr);
             });
     }
 
@@ -84,9 +90,10 @@ export default class PCRE2 {
             return false
         } else if (rc < 0) {
             const err_len = exports.pcre2_get_error_message_8(rc, this.err_buf, 256);
+            exports.pcre2_match_data_free_8(match_data);
             throw new Error(td.decode(this.memory.slice(this.err_buf, this.err_buf + err_len)));
         }
-
+        exports.pcre2_match_data_free_8(match_data);
         return true
     }
 }
