@@ -46,6 +46,17 @@ jobs:
     needs: [ build ]
     runs-on: ubuntu-20.04
     steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Use Node.js 17.x
+        uses: actions/setup-node@v2
+        with:
+          node-version: 17.x
+          cache: 'npm'
+      - run: npm ci
+      - run: echo $PATH
+      - run: ls $(npm bin)
       - run: eslint .
 
 #  release:
