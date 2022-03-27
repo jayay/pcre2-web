@@ -1,6 +1,5 @@
-// @ts-ignore
 import * as assert from 'assert';
-import * as pcre from "./loader.js";
+import * as pcre from './loader.js';
 
 describe("pcre2 bindings", () => {
   it("Is able to access regexp property", () => {
@@ -19,8 +18,7 @@ describe("pcre2 bindings", () => {
       pcre.PCRE2.create("[Hh]elloO\\");
       assert.fail("Should not have succeeded");
     } catch (e) {
-      // @ts-ignore
-      assert.deepStrictEqual(e.toString(), "Error: Failed to compile regex at offset 10: \\ at end of pattern");
+      assert.deepStrictEqual(e, new Error("Failed to compile regex at offset 10: \\ at end of pattern"));
     }
   });
 
