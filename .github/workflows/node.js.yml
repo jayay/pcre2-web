@@ -54,9 +54,7 @@ jobs:
           node-version: 17.x
           cache: 'npm'
       - run: npm ci
-      - run: echo $PATH
-      - run: ls $(npm bin)
-      - run: eslint .
+      - run: $(npm bin)/eslint .
 
 #  release:
 #    if: startsWith(github.event.ref, 'refs/tags/v')
