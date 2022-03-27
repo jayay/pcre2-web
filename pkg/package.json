@@ -1,0 +1,31 @@
+{
+  "name": "@jayay/pcre2-web",
+  "repository": "git://github.com/jayay/pcre2-web.git",
+  "description": "libpcre2 brought to the web using WASM.",
+  "version": "0.1.0",
+  "scripts": {
+  },
+  "keywords": [
+    "libpcre2",
+    "pcre",
+    "regex",
+    "wasm"
+  ],
+  "author": "Jakob Jungmann",
+  "license": "BSD-3-Clause",
+  "devDependencies": {
+    "path": "^0.12.7"
+  },
+  "files": [
+    "out.wasm",
+    "loader.js",
+    "loader.d.ts",
+    "pcre2.js",
+    "pcre2.d.ts"
+  ],
+  "type": "module",
+  "publishConfig": {
+    "registry":"https://npm.pkg.github.com"
+  },
+  "sideEffects": false
+}
