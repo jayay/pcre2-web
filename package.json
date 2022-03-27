@@ -1,9 +1,9 @@
 {
   "name": "@jayay/pcre2-web",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "repository": "git://github.com/jayay/pcre2-web.git",
   "description": "libpcre2 brought to the web using WASM.",
-  "main": "pcre2.js",
+  "main": "pkg/loader.js",
   "scripts": {
     "compile": "scripts/pcre2_compile.sh",
     "build": "npx tsc -b -v",
