@@ -1,4 +1,5 @@
-import path = require('path');
+// @ts-ignore
+import path from 'path';
 
 
 module.exports = {
@@ -6,7 +7,6 @@ module.exports = {
     mode: 'production',
     target: 'es6',
     output: {
-        wasmLoading: 'fetch',
         filename: './main.js',
         path: path.resolve(__dirname, '../dist'),
         chunkFormat: 'commonjs',
@@ -20,8 +20,7 @@ module.exports = {
     resolve: {
         alias: {
             // possibly a bug in webpack
-            env: false,
-            fs: false
+            env: false
         },
     },
 };

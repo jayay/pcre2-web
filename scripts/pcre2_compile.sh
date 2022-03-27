@@ -27,7 +27,7 @@ clang --target=wasm32-unknown-wasi  "-DPCRE2_CODE_UNIT_WIDTH=8" "-DWASI_EMULATED
   "pcre2_maketables.c" "pcre2_match.c" "pcre2_match_data.c" "pcre2_newline.c" "pcre2_ord2utf.c" "pcre2_pattern_info.c" \
   "pcre2_serialize.c" "pcre2_string_utils.c" "pcre2_study.c" "pcre2_substitute.c" "pcre2_substring.c" "pcre2_tables.c" \
   "pcre2_ucd.c" "pcre2_valid_utf.c" "pcre2_xclass.c" \
-  --sysroot /tmp/wasi-libc -nostartfiles -Wl,--no-entry -Wl,--import-memory -Oz --sysroot /tmp/wasi-libc \
+  --sysroot /tmp/wasi-libc -nostartfiles -Wl,--no-entry -Os --sysroot /tmp/wasi-libc \
   -Wl,--export-dynamic -static -flto -Wl,--export=malloc -Wl,--export=free -Wl,--export=pcre2_compile_8 \
   -Wl,--export=pcre2_get_error_message_8 -Wl,--export=pcre2_match_data_create_from_pattern_8 -Wl,--export=pcre2_match_8 \
   -Wl,--export=pcre2_match_data_free_8 \

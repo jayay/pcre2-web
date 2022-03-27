@@ -1,11 +1,11 @@
 {
   "compilerOptions": {
     "outDir": "./pkg",
-    "allowJs": false,
+    "allowJs": true,
     "target": "es6",
     "removeComments": true,
-    "skipLibCheck": true,
-    "module": "commonjs",
+    "skipLibCheck": false,
+    "module": "es6",
     "declaration": true,
     "strictNullChecks": true,
     "strict": true,
@@ -15,8 +15,11 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitThis": true,
-    "noImplicitAny": true
+    "noImplicitAny": true,
+    "moduleResolution": "node",
   },
-  "include": ["./src/**/*.ts"],
+  "include": [
+    "./src/**/*.ts"
+  ],
   "exclude": ["node_modules", "pkg"]
 }

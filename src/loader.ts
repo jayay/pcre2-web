@@ -1,1 +1,1 @@
-import './pcre2';
+export  * from './pcre2.js';
