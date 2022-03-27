@@ -1,3 +1,4 @@
+/* eslint @typescript-eslint/ban-ts-comment: "warn" */
 // @ts-ignore
 import * as wasm from './out.wasm';
 
@@ -25,7 +26,7 @@ export class PCRE2 {
         const text_encoded = te.encode(regexp);
         const re_ptr = wasm.malloc(text_encoded.length);
 
-        if (!err_buf_ptr || !err_ptr || !err_offset_ptr || !re_ptr) {
+        if (err_buf_ptr === 0 || err_ptr === 0 || err_offset_ptr === 0 || re_ptr === 0) {
             throw new Error("Out of memory");
         }
 
@@ -67,7 +68,7 @@ export class PCRE2 {
             subj_ptr,                       /* the subject string */
             subj_buf.length,                /* the length of the subject */
             0,                              /* start at offset 0 in the subject */
-            flags || 0,                     /* default options */
+            flags,                          /* default options */
             match_data,                     /* block for storing the result */
             0);                             /* use default match context */
 
