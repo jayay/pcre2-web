@@ -33,4 +33,13 @@ describe("pcre2 bindings", () => {
     assert.ok(pcre2.test("Hallöchen"));
     assert.ok(!pcre2.test("Hallo"));
   });
+
+  it("Supports compile-time flags", () => {
+    const pcre2_bare = pcre.PCRE2.create("ab");
+    assert.ok(!pcre2_bare.test("Ab"));
+    const pcre2 = pcre.PCRE2.create("ab", pcre.PCRE2_CASELESS);
+    assert.ok(pcre2.test("Ab"));
+    assert.ok(pcre2.test("aB"));
+    assert.ok(!pcre2.test("aC"));
+  });
 });

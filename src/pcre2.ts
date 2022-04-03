@@ -3,6 +3,34 @@
 import * as wasm from './out.wasm';
 
 const PCRE2_ERROR_NOMATCH = -1;
+
+export const PCRE2_ALLOW_EMPTY_CLASS =   0x00000001;  /* C       */
+export const PCRE2_ALT_BSUX =            0x00000002;  /* C       */
+export const PCRE2_AUTO_CALLOUT =        0x00000004;  /* C       */
+export const PCRE2_CASELESS =            0x00000008;  /* C       */
+export const PCRE2_DOLLAR_ENDONLY =      0x00000010;  /*   J M D */
+export const PCRE2_DOTALL =              0x00000020;  /* C       */
+export const PCRE2_DUPNAMES =            0x00000040;  /* C       */
+export const PCRE2_EXTENDED =            0x00000080;  /* C       */
+export const PCRE2_FIRSTLINE =           0x00000100;  /*   J M D */
+export const PCRE2_MATCH_UNSET_BACKREF = 0x00000200;  /* C J M   */
+export const PCRE2_MULTILINE =           0x00000400;  /* C       */
+export const PCRE2_NEVER_UCP =           0x00000800;  /* C       */
+export const PCRE2_NEVER_UTF =           0x00001000;  /* C       */
+export const PCRE2_NO_AUTO_CAPTURE =     0x00002000;  /* C       */
+export const PCRE2_NO_AUTO_POSSESS =     0x00004000;  /* C       */
+export const PCRE2_NO_DOTSTAR_ANCHOR =   0x00008000;  /* C       */
+export const PCRE2_NO_START_OPTIMIZE =   0x00010000;  /*   J M D */
+export const PCRE2_UCP =                 0x00020000;  /* C J M D */
+export const PCRE2_UNGREEDY =            0x00040000;  /* C       */
+export const PCRE2_UTF =                 0x00080000;  /* C J M D */
+export const PCRE2_NEVER_BACKSLASH_C =   0x00100000;  /* C       */
+export const PCRE2_ALT_CIRCUMFLEX =      0x00200000;  /*   J M D */
+export const PCRE2_ALT_VERBNAMES =       0x00400000;  /* C       */
+export const PCRE2_USE_OFFSET_LIMIT =    0x00800000;  /*   J M D */
+export const PCRE2_EXTENDED_MORE =       0x01000000;  /* C       */
+export const PCRE2_LITERAL =             0x02000000;  /* C       */
+
 export class PCRE2 {
     public readonly regexp: string;
     private readonly memory: Uint8Array;
@@ -15,7 +43,7 @@ export class PCRE2 {
         this.err_buf = err_buf;
         this.re_comp_ptr = re_comp_ptr;
     }
-    static create(regexp: string): PCRE2 {
+    static create(regexp: string, flags: number = 0): PCRE2 {
         const memory = new Uint8Array(wasm.memory.buffer);
         const err_buf_ptr = wasm.malloc(256);
         const err_ptr = wasm.malloc(2);
@@ -32,7 +60,7 @@ export class PCRE2 {
 
         memory.set(text_encoded, re_ptr);
 
-        const re_comp_ptr = wasm.pcre2_compile_8(re_ptr, text_encoded.length, 0, err_ptr, err_offset_ptr, 0);
+        const re_comp_ptr = wasm.pcre2_compile_8(re_ptr, text_encoded.length, flags, err_ptr, err_offset_ptr, 0);
         if (re_comp_ptr === 0) {
             const error_int = Buffer.from(memory.slice(err_ptr, err_ptr + 2)).readUInt16LE(0);
             const error_offset_int = Buffer.from(memory.slice(err_offset_ptr, err_offset_ptr + 4)).readInt32LE(0);
