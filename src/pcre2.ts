@@ -33,13 +33,11 @@ export const PCRE2_LITERAL =             0x02000000;  /* C       */
 
 export class PCRE2 {
     public readonly regexp: string;
-    private readonly memory: Uint8Array;
     private readonly err_buf: number; // ptr
     private readonly re_comp_ptr: number; // ptr
 
-    private constructor(regexp: string, memory: Uint8Array, err_buf: number, re_comp_ptr: number) {
+    private constructor(regexp: string, err_buf: number, re_comp_ptr: number) {
         this.regexp = regexp;
-        this.memory = memory;
         this.err_buf = err_buf;
         this.re_comp_ptr = re_comp_ptr;
     }
@@ -73,17 +71,19 @@ export class PCRE2 {
             wasm.free(re_ptr);
             throw new Error(message);
         }
-        return new PCRE2(regexp, memory, err_buf_ptr, re_comp_ptr);
+        return new PCRE2(regexp, err_buf_ptr, re_comp_ptr);
     }
 
     test(subject: string, flags = 0) {
         const td = new TextDecoder();
         const te = new TextEncoder();
 
+        const memory = new Uint8Array(wasm.memory.buffer);
+        
         const subj_buf = te.encode(subject)
         const subj_ptr = wasm.malloc(subj_buf.length)
 
-        this.memory.set(subj_buf, subj_ptr);
+        memory.set(subj_buf, subj_ptr);
 
         const match_data = wasm.pcre2_match_data_create_from_pattern_8(this.re_comp_ptr, 0);
 
@@ -107,7 +107,7 @@ export class PCRE2 {
         } else if (rc < 0) {
             const err_len = wasm.pcre2_get_error_message_8(rc, this.err_buf, 256);
             wasm.pcre2_match_data_free_8(match_data);
-            throw new Error(td.decode(this.memory.slice(this.err_buf, this.err_buf + err_len)));
+            throw new Error(td.decode(memory.slice(this.err_buf, this.err_buf + err_len)));
         }
         wasm.pcre2_match_data_free_8(match_data);
         return true
