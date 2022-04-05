@@ -2,7 +2,7 @@
   "name": "@jayay/pcre2-web",
   "repository": "git://github.com/jayay/pcre2-web.git",
   "description": "libpcre2 brought to the web using WASM.",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "scripts": {
   },
   "keywords": [
@@ -21,7 +21,8 @@
     "loader.js",
     "loader.d.ts",
     "pcre2.js",
-    "pcre2.d.ts"
+    "pcre2.d.ts",
+    "LICENSE.txt"
   ],
   "type": "module",
   "publishConfig": {

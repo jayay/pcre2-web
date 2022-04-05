@@ -1,6 +1,6 @@
 {
   "name": "@jayay/pcre2-web",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "repository": "git://github.com/jayay/pcre2-web.git",
   "description": "libpcre2 brought to the web using WASM.",
   "main": "pkg/loader.js",
