@@ -41,7 +41,7 @@ export class PCRE2 {
         this.err_buf = err_buf;
         this.re_comp_ptr = re_comp_ptr;
     }
-    static create(regexp: string, flags: number = 0): PCRE2 {
+    static create(regexp: string, flags = 0): PCRE2 {
         const memory = new Uint8Array(wasm.memory.buffer);
         const err_buf_ptr = wasm.malloc(256);
         const err_ptr = wasm.malloc(2);
