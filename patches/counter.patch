@@ -1,0 +1,40 @@
+diff --git a/src/pcre2_intmodedep.h b/src/pcre2_intmodedep.h
+index 62626d0..27fe9f7 100644
+--- a/src/pcre2_intmodedep.h
++++ b/src/pcre2_intmodedep.h
+@@ -659,6 +659,7 @@ typedef struct pcre2_real_match_data {
+   uint16_t         matchedby;     /* Type of match (normal, JIT, DFA) */
+   uint16_t         oveccount;     /* Number of pairs */
+   int              rc;            /* The return code from the match */
++  uint32_t         match_call_count;
+   PCRE2_SIZE       ovector[131072]; /* Must be last in the structure */
+ } pcre2_real_match_data;
+ 
+diff --git a/src/pcre2_match.c b/src/pcre2_match.c
+index 8741e14..9b3ed6a 100644
+--- a/src/pcre2_match.c
++++ b/src/pcre2_match.c
+@@ -6812,6 +6812,7 @@ match_data->code = re;
+ match_data->subject = subject;
+ match_data->mark = mb->mark;
+ match_data->matchedby = PCRE2_MATCHEDBY_INTERPRETER;
++match_data->match_call_count = mb->match_call_count;
+ 
+ /* Handle a fully successful match. Set the return code to the number of
+ captured strings, or 0 if there were too many to fit into the ovector, and then
+diff --git a/src/pcre2_match_data.c b/src/pcre2_match_data.c
+index b297f32..81d6216 100644
+--- a/src/pcre2_match_data.c
++++ b/src/pcre2_match_data.c
+@@ -96,6 +96,11 @@ if (match_data != NULL)
+   match_data->memctl.free(match_data, match_data->memctl.memory_data);
+ }
+ 
++PCRE2_EXP_DEFN uint32_t PCRE2_CALL_CONVENTION
++pcre2_match_data_step_count(pcre2_match_data *match_data)
++{
++    return match_data->match_call_count;
++}
+ 
+ 
+ /*************************************************

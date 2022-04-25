@@ -7,10 +7,12 @@ make install TARGET=wasm32-unknown-wasi \
   WASM_CFLAGS="-D_WASI_EMULATED_MMAN --target=wasm32-unknown-wasi" \
   LDFLAGS="-lwasi-emulated-mman" \
   INSTALL_DIR=/tmp/wasi-libc
-cd ../pcre2/src
-cp config.h.generic config.h
-cp pcre2.h.generic pcre2.h
-cp pcre2_chartables.c.dist pcre2_chartables.c      
+cd ../pcre2
+patch -p1 -N -r /dev/null < ../patches/counter.patch || true
+cd src
+cp config.h.generic config.h || true
+cp pcre2.h.generic pcre2.h || true
+cp pcre2_chartables.c.dist pcre2_chartables.c || true
 LIBRARY_PATH=/tmp/wasi-libc/lib/wasm32-wasi \
 CFLAGS="--target=wasm32-unknown-wasi --sysroot /tmp/wasi-libc -I/tmp/wasi-libc/include -Wl,--import-memory \
   -Wl,--no-entry -Wl,--export-all" \
@@ -30,7 +32,7 @@ clang --target=wasm32-unknown-wasi  "-DPCRE2_CODE_UNIT_WIDTH=8" "-DWASI_EMULATED
   --sysroot /tmp/wasi-libc -nostartfiles -Wl,--no-entry -Os --sysroot /tmp/wasi-libc \
   -Wl,--export-dynamic -static -flto -Wl,--export=malloc -Wl,--export=free -Wl,--export=pcre2_compile_8 \
   -Wl,--export=pcre2_get_error_message_8 -Wl,--export=pcre2_match_data_create_from_pattern_8 -Wl,--export=pcre2_match_8 \
-  -Wl,--export=pcre2_match_data_free_8 \
+  -Wl,--export=pcre2_match_data_free_8 -Wl,--export=pcre2_match_data_step_count \
   -o ../../pkg/out.wasm
 cd ../..
 wasm-opt pkg/out.wasm --strip-debug -Oz -o pkg/out.wasm
