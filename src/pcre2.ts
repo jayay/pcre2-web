@@ -31,6 +31,10 @@ export const PCRE2_USE_OFFSET_LIMIT =    0x00800000;  /*   J M D */
 export const PCRE2_EXTENDED_MORE =       0x01000000;  /* C       */
 export const PCRE2_LITERAL =             0x02000000;  /* C       */
 
+export type MatchData = {
+    steps?: number;
+};
+
 export class PCRE2 {
     public readonly regexp: string;
     private readonly err_buf: number; // ptr
@@ -74,7 +78,7 @@ export class PCRE2 {
         return new PCRE2(regexp, err_buf_ptr, re_comp_ptr);
     }
 
-    test(subject: string, flags = 0) {
+    test(subject: string, flags = 0, match_data_result: MatchData = {}) {
         const td = new TextDecoder();
         const te = new TextEncoder();
 
@@ -103,12 +107,14 @@ export class PCRE2 {
         wasm.free(subj_ptr);
 
         if (rc === PCRE2_ERROR_NOMATCH) {
+            match_data_result.steps = wasm.pcre2_match_data_step_count(match_data);
             return false
         } else if (rc < 0) {
             const err_len = wasm.pcre2_get_error_message_8(rc, this.err_buf, 256);
             wasm.pcre2_match_data_free_8(match_data);
             throw new Error(td.decode(memory.slice(this.err_buf, this.err_buf + err_len)));
         }
+        match_data_result.steps = wasm.pcre2_match_data_step_count(match_data);
         wasm.pcre2_match_data_free_8(match_data);
         return true
     }
