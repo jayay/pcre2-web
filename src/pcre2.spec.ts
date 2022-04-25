@@ -45,7 +45,7 @@ describe("pcre2 bindings", () => {
 
   it("Reports the amount of steps", () => {
     const pcre2 = pcre.PCRE2.create("^(\\d+)*$");
-    let match = {};
+    const match = {};
     assert.ok(!pcre2.test("0123z", 0, match));
     assert.deepStrictEqual(match, {steps: 41});
     assert.ok(!pcre2.test("01234z", 0, match));
