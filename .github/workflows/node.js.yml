@@ -55,10 +55,3 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - run: $(npm bin)/eslint .
-
-#  release:
-#    if: startsWith(github.event.ref, 'refs/tags/v')
-#    needs: [ build ]
-#    runs-on: ubuntu-20.04
-#    steps:
-#    - run: npm run release

@@ -26,6 +26,7 @@
     "patches/*",
     "node_modules/*",
     "pkg/*",
-    "dist/*"
+    "dist/*",
+    "scripts/release.js"
   ]
 }

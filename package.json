@@ -7,7 +7,8 @@
   "scripts": {
     "compile": "scripts/pcre2_compile.sh",
     "build": "npx tsc -b -v",
-    "test": "node --experimental-wasm-modules node_modules/mocha/bin/_mocha"
+    "test": "node --experimental-wasm-modules node_modules/mocha/bin/_mocha",
+    "release": "node scripts/release.js"
   },
   "keywords": [
     "libpcre2",
@@ -36,5 +37,6 @@
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "type": "module"
 }
