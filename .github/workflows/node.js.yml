@@ -64,7 +64,7 @@ jobs:
       - run: $(npm bin)/eslint .
 
   release:
-    if: startsWith(github.event.ref, 'refs/tags/v')
+    if: github.event_name == 'release' && github.event.action == 'created'
     needs: [ build ]
     runs-on: ubuntu-20.04
     permissions:
