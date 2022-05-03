@@ -11,7 +11,8 @@ if (!process.env.PACKAGE_VERSION) {
 }
 
 const json_mut = {...json};
-json_mut.version = process.env.PACKAGE_VERSION;
+const regex_remove_leading_v = /^v(.*)+/;
+json_mut.version = process.env.PACKAGE_VERSION.match(regex_remove_leading_v)[1];
 
 json_mut.files = fs.readdirSync(path.join(__dirname, '../pkg'))
     .filter(file => file !== '.gitkeep' && file !== 'package.json' && !file.includes('.spec.'))
