@@ -8,6 +8,8 @@ on:
     branches: [ '*' ]
   pull_request:
     branches: [ '*' ]
+  release:
+    types: [ created ]
 
 jobs:
   build:
@@ -41,6 +43,11 @@ jobs:
     - run: npm run compile
     - run: npm run build --if-present
     - run: npm test
+    - uses: actions/upload-artifact@v3
+      with:
+        name: pkg
+        path: pkg/
+        if-no-files-found: error
 
   lint:
     runs-on: ubuntu-20.04
@@ -55,3 +62,29 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - run: $(npm bin)/eslint .
+
+  release:
+    if: startsWith(github.event.ref, 'refs/tags/v')
+    needs: [ build ]
+    runs-on: ubuntu-20.04
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '17.x'
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@jayay'
+      - run: npm ci
+      - uses: actions/download-artifact@v3
+        with:
+          name: pkg
+          path: pkg
+      - run: npm run release
+        env:
+          PACKAGE_VERSION: ${{ github.ref_name }}
+      - run: npm publish pkg/
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
