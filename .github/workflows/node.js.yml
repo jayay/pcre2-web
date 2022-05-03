@@ -45,7 +45,7 @@ jobs:
     - run: npm test
     - uses: actions/upload-artifact@v3
       with:
-        name: pkg
+        name: pkg-${{ matrix.node-version }}
         path: pkg/
         if-no-files-found: error
 
@@ -80,7 +80,7 @@ jobs:
       - run: npm ci
       - uses: actions/download-artifact@v3
         with:
-          name: pkg
+          name: pkg-17.x
           path: pkg
       - run: npm run release
         env:
