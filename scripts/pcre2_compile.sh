@@ -2,8 +2,7 @@
 set -e
 
 cd wasi-libc
-patch -p1 -N -r /dev/null < ../patches/wasi-libc.patch || true
-make install TARGET=wasm32-unknown-wasi \
+make install -o check-symbols TARGET=wasm32-unknown-wasi \
   WASM_CFLAGS="-D_WASI_EMULATED_MMAN --target=wasm32-unknown-wasi" \
   LDFLAGS="-lwasi-emulated-mman" \
   INSTALL_DIR=/tmp/wasi-libc
