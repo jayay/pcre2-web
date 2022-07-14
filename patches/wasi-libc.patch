@@ -1,0 +1,60 @@
+diff --git a/expected/wasm32-wasi/predefined-macros.txt b/expected/wasm32-wasi/predefined-macros.txt
+index c1bb19e..4f45625 100644
+--- a/expected/wasm32-wasi/predefined-macros.txt
++++ b/expected/wasm32-wasi/predefined-macros.txt
+@@ -1118,7 +1118,6 @@
+ #define NAN (0.0f/0.0f)
+ #define NBBY 8
+ #define NCARGS 131072
+-#define NDEBUG 1
+ #define ND_NA_FLAG_OVERRIDE 0x00000020
+ #define ND_NA_FLAG_ROUTER 0x00000080
+ #define ND_NA_FLAG_SOLICITED 0x00000040
+@@ -2331,6 +2330,7 @@
+ #define _UTIME_H 
+ #define _VALUES_H 
+ #define _VA_LIST 
++#define _WASI_EMULATED_MMAN 1
+ #define _WCHAR_H 
+ #define _WCHAR_T 
+ #define _WCTYPE_H 
+@@ -2641,13 +2641,13 @@
+ #define __NEED_wchar_t 
+ #define __NEED_wctype_t 
+ #define __NEED_wint_t 
++#define __NO_INLINE__ 1
+ #define __OBJC_BOOL_IS_BOOL 0
+ #define __OPENCL_MEMORY_SCOPE_ALL_SVM_DEVICES 3
+ #define __OPENCL_MEMORY_SCOPE_DEVICE 2
+ #define __OPENCL_MEMORY_SCOPE_SUB_GROUP 4
+ #define __OPENCL_MEMORY_SCOPE_WORK_GROUP 1
+ #define __OPENCL_MEMORY_SCOPE_WORK_ITEM 0
+-#define __OPTIMIZE__ 1
+ #define __ORDER_BIG_ENDIAN__ 4321
+ #define __ORDER_LITTLE_ENDIAN__ 1234
+ #define __ORDER_PDP_ENDIAN__ 3412
+@@ -3102,7 +3102,7 @@
+ #define and_eq &=
+ #define asin(x) __tg_real_complex(asin, (x))
+ #define asinh(x) __tg_real_complex(asinh, (x))
+-#define assert(x) (void)0
++#define assert(x) ((void)((x) || (__assert_fail(#x, __FILE__, __LINE__, __func__),0)))
+ #define atan(x) __tg_real_complex(atan, (x))
+ #define atan2(x,y) __tg_real_2(atan2, (x), (y))
+ #define atanh(x) __tg_real_complex(atanh, (x))
+diff --git a/libc-bottom-half/mman/mman.c b/libc-bottom-half/mman/mman.c
+index f02b136..8cf2639 100644
+--- a/libc-bottom-half/mman/mman.c
++++ b/libc-bottom-half/mman/mman.c
+@@ -3,8 +3,10 @@
+ // This is meant to be complete enough to be compatible with code that uses
+ // mmap for simple file I/O. It just allocates memory with malloc and reads
+ // and writes data with pread and pwrite.
+-
++#ifndef _WASI_EMULATED_MMAN
+ #define _WASI_EMULATED_MMAN
++#endif
++
+ #include <stdlib.h>
+ #include <errno.h>
+ #include <unistd.h>
