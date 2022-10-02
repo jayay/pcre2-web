@@ -31,12 +31,15 @@ jobs:
         echo "deb-src http://apt.llvm.org/focal/ llvm-toolchain-focal-14 main" | sudo tee -a /etc/apt/sources.list;
         wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -;
         sudo apt-get update;
-        sudo apt-get install clang-14 lld-14 wabt
+        sudo apt-get install clang-14 lld-14
 
     - name: Install compiler-rt
       run: cd /tmp && wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-16/libclang_rt.builtins-wasm32-wasi-16.0.tar.gz && sudo tar -xvf libclang_rt.builtins-wasm32-wasi-16.0.tar.gz -C /usr/lib/llvm-14/lib/clang/14.0.6
     - name: Install wasi-libc sysroot
       run: cd /tmp && wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-16/wasi-sysroot-16.0.tar.gz && tar -xvf wasi-sysroot-16.0.tar.gz
+
+    - name: Install wabt
+      run: cd /tmp && wget https://github.com/WebAssembly/wabt/releases/download/1.0.29/wabt-1.0.29-ubuntu.tar.gz && tar -xvf wabt-1.0.29-ubuntu.tar.gz && echo "wabt-1.0.29/bin/" >> $GITHUB_PATH
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
