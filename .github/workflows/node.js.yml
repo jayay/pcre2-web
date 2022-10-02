@@ -27,8 +27,8 @@ jobs:
         submodules: recursive
     - name: Install clang
       run: |
-        echo "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-14 main" >> /etc/apt/sources.list;
-        echo "deb-src http://apt.llvm.org/focal/ llvm-toolchain-focal-14 main" >> /etc/apt/sources.list;
+        echo "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-14 main" | sudo tee -a /etc/apt/sources.list;
+        echo "deb-src http://apt.llvm.org/focal/ llvm-toolchain-focal-14 main" | sudo tee -a /etc/apt/sources.list;
         sudo apt-get install clang-14 clang-tools-14 libclang-common-14-dev libclang-14-dev libclang1-14 clang-format-14 clangd-14 lld-14 libunwind-14-dev
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
