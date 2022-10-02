@@ -1,24 +1,18 @@
 #!/bin/sh
 set -e
 
-cd wasi-libc
-patch -p1 -N -r /dev/null < ../patches/wasi-libc.patch || true
-make install TARGET=wasm32-unknown-wasi \
-  WASM_CFLAGS="-D_WASI_EMULATED_MMAN --target=wasm32-unknown-wasi" \
-  LDFLAGS="-lwasi-emulated-mman" \
-  INSTALL_DIR=/tmp/wasi-libc
-cd ../pcre2
+cd pcre2
 patch -p1 -N -r /dev/null < ../patches/counter.patch || true
 cd src
 cp config.h.generic config.h || true
 cp pcre2.h.generic pcre2.h || true
 cp pcre2_chartables.c.dist pcre2_chartables.c || true
-LIBRARY_PATH=/tmp/wasi-libc/lib/wasm32-wasi \
-CFLAGS="--target=wasm32-unknown-wasi --sysroot /tmp/wasi-libc -I/tmp/wasi-libc/include -Wl,--import-memory \
+LIBRARY_PATH=/tmp/wasi-sysroot/lib/wasm32-wasi \
+CFLAGS="--target=wasm32-unknown-wasi --sysroot /tmp/wasi-sysroot -I/tmp/wasi-sysroot/include -Wl,--import-memory \
   -Wl,--no-entry -Wl,--export-all -fno-exceptions -fno-rtti" \
 LDFLAGS="-undefined dynamic_lookup --target=wasm32-unknown-wasi -lwasi-emulated-mman \
-  --export-dynamic --export-table -shared --import-memory -L/tmp/wasi-libc/lib/wasm32-wasi \
-  --sysroot /tmp/wasi-libc/" \
+  --export-dynamic --export-table -shared --import-memory -L/tmp/wasi-sysroot/lib/wasm32-wasi \
+  --sysroot /tmp/wasi-sysroot/" \
 LD=wasm-ld TARGET="wasm32-unknown-wasi" \
 clang --target=wasm32-unknown-wasi  "-DPCRE2_CODE_UNIT_WIDTH=8" "-DWASI_EMULATED_MMAN" \
   -DNDEBUG "-DHEAP_LIMIT=20000000" "-DLINK_SIZE=2" "-DMATCH_LIMIT=10000000" "-DMATCH_LIMIT_DEPTH=10000000" \
@@ -30,7 +24,7 @@ clang --target=wasm32-unknown-wasi  "-DPCRE2_CODE_UNIT_WIDTH=8" "-DWASI_EMULATED
   "pcre2_script_run.c" \
   "pcre2_serialize.c" "pcre2_string_utils.c" "pcre2_study.c" "pcre2_substitute.c" "pcre2_substring.c" "pcre2_tables.c" \
   "pcre2_ucd.c" "pcre2_valid_utf.c" "pcre2_xclass.c" \
-  --sysroot /tmp/wasi-libc -nostartfiles -Wl,--no-entry -Oz --sysroot /tmp/wasi-libc \
+  --sysroot /tmp/wasi-sysroot -nostartfiles -Wl,--no-entry -Oz --sysroot /tmp/wasi-sysroot \
   -Wl,--export-dynamic -static -fno-exceptions -fno-rtti -flto -Wl,--export=malloc -Wl,--export=free -Wl,--export=pcre2_compile_8 \
   -Wl,--export=pcre2_get_error_message_8 -Wl,--export=pcre2_match_data_create_from_pattern_8 -Wl,--export=pcre2_match_8 \
   -Wl,--export=pcre2_match_data_free_8 -Wl,--export=pcre2_match_data_step_count \
