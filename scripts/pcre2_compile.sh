@@ -24,4 +24,4 @@ clang --target=wasm32-unknown-wasi  "-DPCRE2_CODE_UNIT_WIDTH=8" "-DWASI_EMULATED
   -Wl,--export=pcre2_match_data_free_8 -Wl,--export=pcre2_match_data_step_count --rtlib=compiler-rt \
   -o ../../pkg/out.wasm
 cd ../..
-wasm-opt pkg/out.wasm --strip-debug -Oz -o pkg/out.wasm
+wasm-opt pkg/out.wasm --strip-debug --enable-mutable-globals -Oz -o pkg/out.wasm
