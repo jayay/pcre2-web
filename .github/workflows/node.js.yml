@@ -39,7 +39,7 @@ jobs:
       run: cd /tmp && wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-16/wasi-sysroot-16.0.tar.gz && tar -xvf wasi-sysroot-16.0.tar.gz
 
     - name: Install wabt
-      run: cd /tmp && wget https://github.com/WebAssembly/wabt/releases/download/1.0.29/wabt-1.0.29-ubuntu.tar.gz && tar -xvf wabt-1.0.29-ubuntu.tar.gz && echo "wabt-1.0.29/bin/" >> $GITHUB_PATH
+      run: cd /tmp && wget https://github.com/WebAssembly/wabt/releases/download/1.0.29/wabt-1.0.29-ubuntu.tar.gz && tar -xvf wabt-1.0.29-ubuntu.tar.gz && echo "$(pwd)/wabt-1.0.29/bin/" >> $GITHUB_PATH
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
