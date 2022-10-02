@@ -8,8 +8,6 @@ cp config.h.generic config.h || true
 cp pcre2.h.generic pcre2.h || true
 cp pcre2_chartables.c.dist pcre2_chartables.c || true
 LIBRARY_PATH=/tmp/wasi-sysroot/lib/wasm32-wasi \
-CFLAGS="--target=wasm32-unknown-wasi --sysroot /tmp/wasi-sysroot -I/tmp/wasi-sysroot/include -Wl,--import-memory \
-  -Wl,--no-entry -Wl,--export-all -fno-exceptions -fno-rtti" \
 LD=wasm-ld TARGET="wasm32-unknown-wasi" \
 clang --target=wasm32-unknown-wasi  "-DPCRE2_CODE_UNIT_WIDTH=8" "-DWASI_EMULATED_MMAN" \
   -DNDEBUG "-DHEAP_LIMIT=20000000" "-DLINK_SIZE=2" "-DMATCH_LIMIT=10000000" "-DMATCH_LIMIT_DEPTH=10000000" \
