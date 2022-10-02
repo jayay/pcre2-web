@@ -27,7 +27,7 @@ clang --target=wasm32-unknown-wasi  "-DPCRE2_CODE_UNIT_WIDTH=8" "-DWASI_EMULATED
   --sysroot /tmp/wasi-sysroot -nostartfiles -Wl,--no-entry -Oz --sysroot /tmp/wasi-sysroot \
   -Wl,--export-dynamic -static -fno-exceptions -fno-rtti -flto -Wl,--export=malloc -Wl,--export=free -Wl,--export=pcre2_compile_8 \
   -Wl,--export=pcre2_get_error_message_8 -Wl,--export=pcre2_match_data_create_from_pattern_8 -Wl,--export=pcre2_match_8 \
-  -Wl,--export=pcre2_match_data_free_8 -Wl,--export=pcre2_match_data_step_count \
+  -Wl,--export=pcre2_match_data_free_8 -Wl,--export=pcre2_match_data_step_count -nodefaultlibs -Wl,-lc \
   -o ../../pkg/out.wasm
 cd ../..
 wasm-opt pkg/out.wasm --strip-debug -Oz -o pkg/out.wasm
