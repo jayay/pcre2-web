@@ -15,7 +15,7 @@ npm config set @jayay:registry https://npm.pkg.github.com
 You can now add the depencency to your project:
 
 ```
-npm install @jayay/pcre2-web@0.5.3
+npm install @jayay/pcre2-web
 ```
 
 ## License
