@@ -9,7 +9,7 @@ cp pcre2.h.generic pcre2.h || true
 cp pcre2_chartables.c.dist pcre2_chartables.c || true
 LIBRARY_PATH=/tmp/wasi-sysroot/lib/wasm32-wasi \
 CFLAGS="--target=wasm32-unknown-wasi --sysroot /tmp/wasi-sysroot -I/tmp/wasi-sysroot/include -Wl,--import-memory \
-  -Wl,--no-entry -Wl,--export-all -fno-exceptions -fno-rtti" \
+  -Wl,--no-entry -Wl,--export-all -fno-exceptions -fno-rtti -rtlib=compiler-rt" \
 LDFLAGS="-undefined dynamic_lookup --target=wasm32-unknown-wasi -lwasi-emulated-mman \
   --export-dynamic --export-table -shared --import-memory -L/tmp/wasi-sysroot/lib/wasm32-wasi \
   --sysroot /tmp/wasi-sysroot/" \
