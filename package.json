@@ -31,8 +31,7 @@
   "author": "Jakob Jungmann",
   "license": "BSD-3-Clause",
   "dependencies": {
-    "path": "^0.12.7",
-    "wasm-opt": "^1.3.0"
+    "path": "^0.12.7"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
