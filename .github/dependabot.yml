@@ -9,11 +9,15 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "daily"
+      time: "05:00"
+      timezone: "Europe/Berlin"
       
   - package-ecosystem: "gitsubmodule" # See documentation for possible values
     directory: "/" # Location of package manifests
     schedule:
       interval: "daily"
+      time: "05:00"
+      timezone: "Europe/Berlin"
 
   - package-ecosystem: "github-actions"
     directory: "/"
