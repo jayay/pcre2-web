@@ -11,6 +11,9 @@ on:
   release:
     types: [ created ]
 
+env:
+  WASI_SDK_PATH: /tmp/wasi-sdk
+
 jobs:
   build:
 
@@ -26,9 +29,9 @@ jobs:
       with:
         submodules: recursive
 
-    - run: mkdir /tmp/wasi-sdk
+    - run: mkdir ${WASI_SDK_PATH}
     - name: Install WASI-SDK
-      run: cd /tmp && wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-15/wasi-sdk-15.0-linux.tar.gz && sudo tar -xvf wasi-sdk-15.0-linux.tar.gz -C /tmp/wasi-sdk
+      run: cd /tmp && wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-15/wasi-sdk-15.0-linux.tar.gz && sudo tar -xvf wasi-sdk-15.0-linux.tar.gz -C ${WASI_SDK_PATH}
 
     - name: Install wabt
       run: cd /tmp && wget https://github.com/WebAssembly/wabt/releases/download/1.0.29/wabt-1.0.29-ubuntu.tar.gz && tar -xvf wabt-1.0.29-ubuntu.tar.gz && echo "$(pwd)/wabt-1.0.29/bin/" >> $GITHUB_PATH
@@ -38,10 +41,10 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: echo "/tmp/wasi-sdk/bin" >> $GITHUB_PATH
+    - run: echo "${WASI_SDK_PATH}/bin" >> $GITHUB_PATH
     - run: echo $PATH
     - run: npm ci
-    - run: npm run compile
+    - run: CC="${WASI_SDK_PATH}/bin/clang --sysroot=${WASI_SDK_PATH}/share/wasi-sysroot" npm run compile
     - run: npm run build --if-present
     - run: npm test
     - run: wasm-validate --disable-mutable-globals --disable-bulk-memory pkg/out.wasm
