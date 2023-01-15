@@ -20,5 +20,5 @@ ${CC:-clang} --target=wasm32-unknown-wasi -UHAVE_PTHREAD "-DPCRE2_CODE_UNIT_WIDT
   -nostartfiles -Wl,--no-entry -Oz \
   -Wl,--export-dynamic -static -fno-exceptions -fno-rtti -flto -Wl,--export=malloc -Wl,--export=free -Wl,--export=pcre2_compile_8 \
   -Wl,--export=pcre2_get_error_message_8 -Wl,--export=pcre2_match_data_create_from_pattern_8 -Wl,--export=pcre2_match_8 \
-  -Wl,--export=pcre2_match_data_free_8 -Wl,--export=pcre2_match_data_step_count --rtlib=compiler-rt \
+  -Wl,--export=pcre2_match_data_free_8 -Wl,--export=pcre2_match_data_step_count \
   -o ../../pkg/out.wasm
