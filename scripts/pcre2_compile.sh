@@ -7,7 +7,7 @@ cd src
 cp config.h.generic config.h || true
 cp pcre2.h.generic pcre2.h || true
 cp pcre2_chartables.c.dist pcre2_chartables.c || true
-${CC:-clang} --target=wasm32-unknown-wasi -mthread-model single -mno-bulk-memory -mno-atomics -mno-mutable-globals "-DPCRE2_CODE_UNIT_WIDTH=8" "-DWASI_EMULATED_MMAN" \
+${CC:-clang} --target=wasm32 -mthread-model single -mno-bulk-memory -mno-atomics -mno-mutable-globals "-DPCRE2_CODE_UNIT_WIDTH=8" "-DWASI_EMULATED_MMAN" \
   -DNDEBUG "-DHEAP_LIMIT=20000000" "-DLINK_SIZE=2" "-DMATCH_LIMIT=10000000" "-DMATCH_LIMIT_DEPTH=10000000" \
   "-DMAX_NAME_COUNT=10000" "-DMAX_NAME_SIZE=32" "-DNEWLINE_DEFAULT=2" "-DPARENS_NEST_LIMIT=250"  "-DSUPPORT_PCRE2_8=1" \
   "-DSUPPORT_UNICODE=1" -USUPPORT_PCRE2GREP_JIT -USUPPORT_JIT -DPCRE2_STATIC=1 \
@@ -21,5 +21,5 @@ ${CC:-clang} --target=wasm32-unknown-wasi -mthread-model single -mno-bulk-memory
   -Wl,--export-dynamic -static -fno-exceptions -fno-rtti -flto -Wl,--export=malloc -Wl,--export=free -Wl,--export=pcre2_compile_8 \
   -Wl,--export=pcre2_get_error_message_8 -Wl,--export=pcre2_match_data_create_from_pattern_8 -Wl,--export=pcre2_match_8 \
   -Wl,--export=pcre2_match_data_free_8 -Wl,--export=pcre2_match_data_step_count \
-  -Wl,-mno-bulk-memory -Wl,-mno-atomics -Wl,-mno-mutable-globals \
+  -Wl,--import-memory \
   -o ../../pkg/out.wasm
