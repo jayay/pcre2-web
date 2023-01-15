@@ -13,8 +13,8 @@ on:
 
 env:
   WASI_VERSION: 15
-  WASI_VERSION_FULL: ${{ env.WASI_VERSION }}.0
-  WASI_SDK_PATH: /tmp/wasi-sdk-${{ env.WASI_VERSION_FULL }}
+  WASI_VERSION_FULL: ${{ format('{0}.0', env.WASI_VERSION) }}
+  WASI_SDK_PATH: ${{ format('/tmp/wasi-sdk-{0}', env.WASI_VERSION_FULL) }}
   WABT_VERSION: 1.0.29
 
 jobs:
