@@ -27,7 +27,7 @@ jobs:
         submodules: recursive
 
     - run: mkdir /tmp/wasi-sdk
-    - name: Install compiler-rt
+    - name: Install WASI-SDK
       run: cd /tmp && wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-15/wasi-sdk-15.0-linux.tar.gz && sudo tar -xvf wasi-sdk-15.0-linux.tar.gz -C /tmp/wasi-sdk
 
     - name: Install wabt
@@ -40,7 +40,6 @@ jobs:
         cache: 'npm'
     - run: echo "/tmp/wasi-sdk/bin" >> $GITHUB_PATH
     - run: echo $PATH
-    - run: llc --version
     - run: npm ci
     - run: npm run compile
     - run: npm run build --if-present
