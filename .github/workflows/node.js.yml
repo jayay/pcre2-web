@@ -12,7 +12,7 @@ on:
     types: [ created ]
 
 env:
-  WASI_SDK_PATH: /tmp/wasi-sdk
+  WASI_SDK_PATH: /tmp/wasi-sdk-15.0
 
 jobs:
   build:
@@ -29,9 +29,8 @@ jobs:
       with:
         submodules: recursive
 
-    - run: mkdir ${WASI_SDK_PATH}
     - name: Install WASI-SDK
-      run: cd /tmp && wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-15/wasi-sdk-15.0-linux.tar.gz && sudo tar -xvf wasi-sdk-15.0-linux.tar.gz -C ${WASI_SDK_PATH}
+      run: cd /tmp && wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-15/wasi-sdk-15.0-linux.tar.gz && sudo tar -xvf wasi-sdk-15.0-linux.tar.gz -C /tmp
 
     - name: Install wabt
       run: cd /tmp && wget https://github.com/WebAssembly/wabt/releases/download/1.0.29/wabt-1.0.29-ubuntu.tar.gz && tar -xvf wabt-1.0.29-ubuntu.tar.gz && echo "$(pwd)/wabt-1.0.29/bin/" >> $GITHUB_PATH
