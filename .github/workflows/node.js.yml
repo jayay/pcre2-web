@@ -12,7 +12,7 @@ on:
     types: [ created ]
 
 env:
-  WASI_VERSION: 15
+  WASI_VERSION: 19
   WABT_VERSION: 1.0.29
 
 jobs:
