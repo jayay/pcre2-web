@@ -25,18 +25,10 @@ jobs:
     - uses: actions/checkout@v3
       with:
         submodules: recursive
-    - name: Install clang
-      run: |
-        echo "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-14 main" | sudo tee -a /etc/apt/sources.list;
-        echo "deb-src http://apt.llvm.org/focal/ llvm-toolchain-focal-14 main" | sudo tee -a /etc/apt/sources.list;
-        wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -;
-        sudo apt-get update;
-        sudo apt-get install clang-14 lld-14
 
+    - run: mkdir /tmp/wasi-sdk
     - name: Install compiler-rt
-      run: cd /tmp && wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-15/libclang_rt.builtins-wasm32-wasi-15.0.tar.gz && sudo tar -xvf libclang_rt.builtins-wasm32-wasi-15.0.tar.gz -C /usr/lib/llvm-14/lib/clang/14.0.6
-    - name: Install wasi-libc sysroot
-      run: cd /tmp && wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-15/wasi-sysroot-15.0.tar.gz && tar -xvf wasi-sysroot-15.0.tar.gz
+      run: cd /tmp && wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-15/wasi-sdk-15.0-linux.tar.gz && sudo tar -xvf wasi-sdk-15.0-linux.tar.gz -C /tmp/wasi-sdk
 
     - name: Install wabt
       run: cd /tmp && wget https://github.com/WebAssembly/wabt/releases/download/1.0.29/wabt-1.0.29-ubuntu.tar.gz && tar -xvf wabt-1.0.29-ubuntu.tar.gz && echo "$(pwd)/wabt-1.0.29/bin/" >> $GITHUB_PATH
@@ -46,10 +38,8 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - name: append path for wasm-ld
-      run: echo "/usr/lib/llvm-14/bin" >> $GITHUB_PATH
-    - name: Show PATH variable
-      run: echo $PATH
+    - run: echo "/tmp/wasi-sdk/bin" >> $GITHUB_PATH
+    - run: echo $PATH
     - run: llc --version
     - run: npm ci
     - run: npm run compile
