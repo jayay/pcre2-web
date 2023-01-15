@@ -21,4 +21,5 @@ ${CC:-clang} --target=wasm32-unknown-wasi -mthread-model single -mno-bulk-memory
   -Wl,--export-dynamic -static -fno-exceptions -fno-rtti -flto -Wl,--export=malloc -Wl,--export=free -Wl,--export=pcre2_compile_8 \
   -Wl,--export=pcre2_get_error_message_8 -Wl,--export=pcre2_match_data_create_from_pattern_8 -Wl,--export=pcre2_match_8 \
   -Wl,--export=pcre2_match_data_free_8 -Wl,--export=pcre2_match_data_step_count \
+  -Wl,-mno-bulk-memory -Wl,-mno-atomics -Wl,-mno-mutable-globals \
   -o ../../pkg/out.wasm
