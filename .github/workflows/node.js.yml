@@ -13,8 +13,6 @@ on:
 
 env:
   WASI_VERSION: 15
-  WASI_VERSION_FULL: ${{ format('{0}.0', env.WASI_VERSION) }}
-  WASI_SDK_PATH: ${{ format('/tmp/wasi-sdk-{0}', env.WASI_VERSION_FULL) }}
   WABT_VERSION: 1.0.29
 
 jobs:
@@ -32,11 +30,15 @@ jobs:
       with:
         submodules: recursive
 
+    - name: set env variables
+      run: |
+        echo "WASI_VERSION_FULL=${WASI_VERSION}.0 >> $GITHUB_ENV"
+        echo "WASI_SDK_PATH=/tmp/wasi-sdk-${WASI_VERSION_FULL}" >> $GITHUB_ENV
     - name: Install WASI-SDK
-      run: cd /tmp && wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-${{ env.WASI_VERSION }}/wasi-sdk-${{ env.WASI_VERSION_FULL }}-linux.tar.gz && sudo tar -xvf wasi-sdk-${{ env.WASI_VERSION_FULL }}-linux.tar.gz -C /tmp
+      run: cd /tmp && wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-${WASI_VERSION}/wasi-sdk-${WASI_VERSION_FULL}-linux.tar.gz && sudo tar -xvf wasi-sdk-${WASI_VERSION_FULL}-linux.tar.gz -C /tmp
 
     - name: Install wabt
-      run: cd /tmp && wget https://github.com/WebAssembly/wabt/releases/download/${{ env.WABT_VERSION }}/wabt-${{ env.WABT_VERSION }}-ubuntu.tar.gz && tar -xvf wabt-${{ env.WABT_VERSION }}-ubuntu.tar.gz && echo "$(pwd)/wabt-${{ env.WABT_VERSION }}/bin/" >> $GITHUB_PATH
+      run: cd /tmp && wget https://github.com/WebAssembly/wabt/releases/download/${WABT_VERSION}/wabt-${WABT_VERSION}-ubuntu.tar.gz && tar -xvf wabt-${WABT_VERSION}-ubuntu.tar.gz && echo "$(pwd)/wabt-${WABT_VERSION}/bin/" >> $GITHUB_PATH
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
