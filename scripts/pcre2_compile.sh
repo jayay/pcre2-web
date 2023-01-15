@@ -7,8 +7,7 @@ cd src
 cp config.h.generic config.h || true
 cp pcre2.h.generic pcre2.h || true
 cp pcre2_chartables.c.dist pcre2_chartables.c || true
-LD=wasm-ld \
-clang --target=wasm32-unknown-wasi  "-DPCRE2_CODE_UNIT_WIDTH=8" "-DWASI_EMULATED_MMAN" \
+${CC:-clang} --target=wasm32-unknown-wasi  "-DPCRE2_CODE_UNIT_WIDTH=8" "-DWASI_EMULATED_MMAN" \
   -DNDEBUG "-DHEAP_LIMIT=20000000" "-DLINK_SIZE=2" "-DMATCH_LIMIT=10000000" "-DMATCH_LIMIT_DEPTH=10000000" \
   "-DMAX_NAME_COUNT=10000" "-DMAX_NAME_SIZE=32" "-DNEWLINE_DEFAULT=2" "-DPARENS_NEST_LIMIT=250"  "-DSUPPORT_PCRE2_8=1" \
   "-DSUPPORT_UNICODE=1" -USUPPORT_PCRE2GREP_JIT -USUPPORT_JIT -DPCRE2_STATIC=1 \
@@ -18,7 +17,7 @@ clang --target=wasm32-unknown-wasi  "-DPCRE2_CODE_UNIT_WIDTH=8" "-DWASI_EMULATED
   "pcre2_script_run.c" \
   "pcre2_serialize.c" "pcre2_string_utils.c" "pcre2_study.c" "pcre2_substitute.c" "pcre2_substring.c" "pcre2_tables.c" \
   "pcre2_ucd.c" "pcre2_valid_utf.c" "pcre2_xclass.c" \
-  --sysroot /tmp/wasi-sysroot -nostartfiles -Wl,--no-entry -Oz \
+  -nostartfiles -Wl,--no-entry -Oz \
   -Wl,--export-dynamic -static -fno-exceptions -fno-rtti -flto -Wl,--export=malloc -Wl,--export=free -Wl,--export=pcre2_compile_8 \
   -Wl,--export=pcre2_get_error_message_8 -Wl,--export=pcre2_match_data_create_from_pattern_8 -Wl,--export=pcre2_match_8 \
   -Wl,--export=pcre2_match_data_free_8 -Wl,--export=pcre2_match_data_step_count --rtlib=compiler-rt \
