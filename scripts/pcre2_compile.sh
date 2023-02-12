@@ -11,7 +11,7 @@ ${CC:-clang} --target=wasm32-unknown-wasi  "-DPCRE2_CODE_UNIT_WIDTH=8" "-DWASI_E
   -DNDEBUG "-DHEAP_LIMIT=20000000" "-DLINK_SIZE=2" "-DMATCH_LIMIT=10000000" "-DMATCH_LIMIT_DEPTH=10000000" \
   "-DMAX_NAME_COUNT=10000" "-DMAX_NAME_SIZE=32" "-DNEWLINE_DEFAULT=2" "-DPARENS_NEST_LIMIT=250"  "-DSUPPORT_PCRE2_8=1" \
   "-DSUPPORT_UNICODE=1" -USUPPORT_PCRE2GREP_JIT -USUPPORT_JIT -DPCRE2_STATIC=1 \
-  "pcre2_auto_possess.c" "pcre2_chartables.c" "pcre2_compile.c" "pcre2_config.c" "pcre2_context.c" \
+  "pcre2_auto_possess.c" "pcre2_chartables.c" "pcre2_chkdint.c" "pcre2_compile.c" "pcre2_config.c" "pcre2_context.c" \
   "pcre2_convert.c" "pcre2_dfa_match.c" "pcre2_error.c" "pcre2_extuni.c" "pcre2_find_bracket.c" "pcre2_jit_compile.c" \
   "pcre2_maketables.c" "pcre2_match.c" "pcre2_match_data.c" "pcre2_newline.c" "pcre2_ord2utf.c" "pcre2_pattern_info.c" \
   "pcre2_script_run.c" \
