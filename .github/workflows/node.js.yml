@@ -54,7 +54,7 @@ jobs:
     - run: npm run build --if-present
     - run: npm test
     - run: wasm-validate --disable-mutable-globals --disable-bulk-memory pkg/out.wasm
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
         name: pkg-${{ matrix.node-version }}
         path: pkg/
