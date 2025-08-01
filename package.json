@@ -24,7 +24,7 @@
     "eslint": "^8.57.0",
     "mocha": "latest",
     "ts-node": "^10.9.2",
-    "typescript": "^5.7.3"
+    "typescript": "^5.9.2"
   },
   "author": "Jakob Jungmann",
   "license": "BSD-3-Clause",
