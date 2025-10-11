@@ -43,7 +43,7 @@ jobs:
       run: cd /tmp && wget https://github.com/WebAssembly/wabt/releases/download/${WABT_VERSION}/wabt-${WABT_VERSION}-ubuntu.tar.gz && tar -xvf wabt-${WABT_VERSION}-ubuntu.tar.gz && echo "$(pwd)/wabt-${WABT_VERSION}/bin/" >> $GITHUB_PATH
 
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v5
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
@@ -67,7 +67,7 @@ jobs:
         with:
           submodules: recursive
       - name: Use Node.js 18.x
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 18.x
           cache: 'npm'
@@ -83,7 +83,7 @@ jobs:
       packages: write
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: '18.x'
           registry-url: 'https://npm.pkg.github.com'
