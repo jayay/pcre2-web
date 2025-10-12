@@ -5,7 +5,6 @@
   "description": "libpcre2 brought to the web using WASM.",
   "main": "pkg/loader.js",
   "scripts": {
-    "compile": "scripts/pcre2_compile.sh",
     "build": "npx tsc -b -v",
     "test": "node --experimental-wasm-modules node_modules/mocha/bin/_mocha",
     "release": "node scripts/release.js"
