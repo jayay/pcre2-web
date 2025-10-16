@@ -62,6 +62,7 @@ buildNpmPackage (finalAttrs: {
   installPhase = ''
     mkdir -p $out
     cp -R pkg/* $out/
+    rm -f $out/*.spec.*
   '';
 
   doCheck = true;
