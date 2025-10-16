@@ -1,13 +1,22 @@
-{ 
-  stdenv ? pkgs.stdenv, 
-  pkgs ? import <nixpkgs> {},
+{
+  stdenv ? pkgs.stdenv,
+  pkgs ? import (builtins.fetchGit {
+    # Descriptive name to make the store path easier to identify
+    name = "nixos-unstable";
+    url = "https://github.com/nixos/nixpkgs/";
+    # Commit hash for nixos-unstable as of 2018-09-12
+    # `git ls-remote https://github.com/nixos/nixpkgs nixos-unstable`
+    ref = "refs/heads/nixos-unstable";
+    rev = "a493e93b4a259cd9fea8073f89a7ed9b1c5a1da2";
+  }) {},
+  # pkgs ? import <nixpkgs> {},
 }:
 let
-  upstream = pkgs.pcre2;
+  inherit (pkgs) lib runCommand pcre2;
 in
-pkgs.pkgsCross.wasi32.stdenv.mkDerivation {
+pkgs.pkgsCross.wasi32.stdenv.mkDerivation (finalAttrs: {
   pname = "pcre2-wasm";
-  inherit (upstream) version src;
+  inherit (pcre2) version src;
   configureFlags = ["--disable-pcre2grep-jit" "--disable-pcre2grep-callout"];
 
   dontFixup = true;
@@ -31,4 +40,8 @@ pkgs.pkgsCross.wasi32.stdenv.mkDerivation {
     mkdir -p $out/
     mv out.wasm $out/
   '';
-}
+
+  passthru.tests.validate = (runCommand "validate" { } ''
+    ${pkgs.wabt}/bin/wasm-validate --disable-mutable-globals --disable-bulk-memory ${finalAttrs.finalPackage}/out.wasm > $out
+  '');
+})
