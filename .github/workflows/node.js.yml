@@ -19,6 +19,7 @@ jobs:
       actions: "write"
 
     steps:
+      - uses: actions/checkout@v4
       - uses: nixbuild/nix-quick-install-action@v34
         with:
           nix_conf: |
@@ -62,8 +63,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          submodules: recursive
       - name: Use Node.js 20.x
         uses: actions/setup-node@v4
         with:
