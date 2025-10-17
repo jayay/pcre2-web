@@ -1,13 +1,6 @@
 {
   stdenv ? pkgs.stdenv,
-  pkgs ? import (builtins.fetchGit {
-    # Descriptive name to make the store path easier to identify
-    name = "nixos-unstable";
-    url = "https://github.com/nixos/nixpkgs/";
-    # `git ls-remote https://github.com/nixos/nixpkgs nixos-unstable`
-    ref = "refs/heads/nixos-unstable";
-    rev = "a493e93b4a259cd9fea8073f89a7ed9b1c5a1da2";
-  }) {},
+  pkgs ? import (builtins.fetchGit (builtins.fromJSON (builtins.readFile ./nixpkgs-rev.json)) ) {},
 }:
 let
   inherit (pkgs) lib runCommand buildNpmPackage pcre2 nodejs writeTextFile;
@@ -77,4 +70,6 @@ buildNpmPackage (finalAttrs: {
     ${pkgs.wabt}/bin/wasm-validate --disable-mutable-globals --disable-bulk-memory pkg/out.wasm
     ${pkgs.nodejs}/bin/node --experimental-wasm-modules node_modules/mocha/bin/_mocha
   '';
+
+  passthru.updateScript = ./update.nu;
 })
