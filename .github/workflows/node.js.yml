@@ -19,7 +19,7 @@ jobs:
       actions: "write"
 
     steps:
-      - uses: nixbuild/nix-quick-install-action@v30
+      - uses: nixbuild/nix-quick-install-action@v34
         with:
           nix_conf: |
             keep-env-derivations = true
