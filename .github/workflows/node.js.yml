@@ -16,8 +16,7 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      id-token: "write"
-      contents: "read"
+      actions: "write"
 
     steps:
       - uses: nixbuild/nix-quick-install-action@v30
