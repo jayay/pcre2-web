@@ -10,7 +10,7 @@
   }) {},
 }:
 let
-  inherit (pkgs) lib runCommand buildNpmPackage pcre2 nodejs;
+  inherit (pkgs) lib runCommand buildNpmPackage pcre2 nodejs writeTextFile;
   pcre2-wasm = pkgs.pkgsCross.wasi32.stdenv.mkDerivation {
     pname = "pcre2-wasm";
     inherit (pcre2) version src;
@@ -39,6 +39,12 @@ let
       mv out.wasm $out/
     '';
   };
+  versionFile = writeTextFile {
+    name = "pcre2-version.json";
+    text = builtins.toJSON {
+      "version" = pcre2.version;
+    };
+  };
 in
 buildNpmPackage (finalAttrs: {
   name = "pcre2-web";
@@ -56,6 +62,7 @@ buildNpmPackage (finalAttrs: {
 
   postBuild = ''
     cp -R ${pcre2-wasm}/out.wasm pkg/
+    cp ${versionFile} pkg/pcre2-version.json
     cp src/package.template.json pkg/package.json
   '';
 
