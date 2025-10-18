@@ -1,6 +1,7 @@
 {
   stdenv ? pkgs.stdenv,
   pkgs ? import (builtins.fetchGit (builtins.fromJSON (builtins.readFile ./nixpkgs-rev.json)) ) {},
+  releaseVer ? null
 }:
 let
   inherit (pkgs) lib runCommand buildNpmPackage pcre2 nodejs writeTextFile;
@@ -38,6 +39,12 @@ let
       "version" = pcre2.version;
     };
   };
+  pcre2webVersion = if releaseVer == null then packageTemplate.version else lib.strings.removePrefix "v" releaseVer;
+  packageTemplate = builtins.fromJSON (builtins.readFile ./src/package.template.json);
+  packageJson = writeTextFile {
+    name = "package.json";
+    text = builtins.toJSON ( packageTemplate // { version = pcre2webVersion; });
+  };
 in
 buildNpmPackage (finalAttrs: {
   name = "pcre2-web";
@@ -56,7 +63,7 @@ buildNpmPackage (finalAttrs: {
   postBuild = ''
     cp -R ${pcre2-wasm}/out.wasm pkg/
     cp ${versionFile} pkg/pcre2-version.json
-    cp src/package.template.json pkg/package.json
+    cp ${packageJson} pkg/package.json
   '';
 
   installPhase = ''
