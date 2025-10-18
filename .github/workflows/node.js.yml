@@ -12,6 +12,11 @@ on:
     types: [created]
   schedule:
     - cron: "47 21 * * *"
+  workflow_run:
+    workflows: ["update"]
+    types: [requested]
+    branches:
+      - "main"
 
 jobs:
   build:
@@ -71,7 +76,7 @@ jobs:
       - run: node_modules/.bin/eslint .
 
   update:
-    if: github.event_name == 'schedule'
+    if: github.event_name == 'schedule' || github.event.name == "workflow_run"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
