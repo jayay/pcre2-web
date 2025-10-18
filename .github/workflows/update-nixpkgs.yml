@@ -19,9 +19,9 @@ jobs:
       - name: Restore and save Nix store
         uses: nix-community/cache-nix-action@v6
         with:
-          primary-key: nix-${{ runner.os }}-${{ hashFiles('update.nu') }}
-          restore-prefixes-first-match: nix-${{ runner.os }}-
-          purge-prefixes: nix-${{ runner.os }}-${{ hashFiles('update.nu') }}
+          primary-key: updater-${{ runner.os }}-${{ hashFiles('update.nu') }}
+          restore-prefixes-first-match: updater-${{ runner.os }}-
+          purge-prefixes: updater-${{ runner.os }}-${{ hashFiles('update.nu') }}
 
       - run: nix-channel --add https://nixos.org/channels/nixpkgs-unstable nixpkgs
       - run: nix-channel --update nixpkgs
@@ -29,7 +29,7 @@ jobs:
 
       - uses: gr2m/create-or-update-pull-request-action@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.UPDATER_TOKEN }}
         with:
           title: "Update nixpkgs"
           body: "Updates nixpkgs to latest commit"
