@@ -21,7 +21,7 @@ jobs:
         with:
           primary-key: nix-${{ runner.os }}-${{ hashFiles('update.nu') }}
           restore-prefixes-first-match: nix-${{ runner.os }}-
-          purge-prefixes: nix-${{ runner.os }}-${{ hashFiles('update.nu')
+          purge-prefixes: nix-${{ runner.os }}-${{ hashFiles('update.nu') }}
 
       - run: nix-channel --add https://nixos.org/channels/nixpkgs-unstable nixpkgs
       - run: nix-channel --update nixpkgs
