@@ -30,7 +30,7 @@ jobs:
         uses: nix-community/cache-nix-action@v6
         with:
           # restore and save a cache using this key
-          primary-key: nix-${{ runner.os }}-${{ hashFiles('**/*.nix', 'package-lock.json', 'nixpkgs-rev.json') }}
+          primary-key: nix-${{ runner.os }}-${{ hashFiles('**/*.nix', '**/*.json') }}
           # if there's no cache hit, restore a cache by this prefix
           restore-prefixes-first-match: nix-${{ runner.os }}-
           # collect garbage until the Nix store size (in bytes) is at most this number
@@ -77,19 +77,35 @@ jobs:
       packages: write
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - uses: nixbuild/nix-quick-install-action@v34
         with:
-          node-version: "18.x"
-          registry-url: "https://npm.pkg.github.com"
-          scope: "@jayay"
-      - run: npm ci
-      - uses: actions/download-artifact@v4
+          nix_conf: |
+            keep-env-derivations = true
+            keep-outputs = true
+
+      - name: Restore and save Nix store
+        uses: nix-community/cache-nix-action@v6
         with:
-          name: pkg
-          path: pkg
-      - run: npm run release
+          primary-key: nix-${{ runner.os }}-${{ hashFiles('**/*.nix', '**/*.json') }}
+          restore-prefixes-first-match: nix-${{ runner.os }}-
+          gc-max-store-size-linux: 1G
+          purge: true
+          purge-prefixes: nix-${{ runner.os }}-
+
+      - run: |
+          {
+            echo -n "OUT_PATH="
+            nix-build --argstr 'releaseVer' "$PACKAGE_VERSION"
+          } >> "$GITHUB_ENV"
         env:
           PACKAGE_VERSION: ${{ github.ref_name }}
-      - run: npm publish pkg/
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "20.x"
+          registry-url: "https://npm.pkg.github.com"
+          scope: "@jayay"
+
+      - run: npm publish "$OUT_PATH"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
