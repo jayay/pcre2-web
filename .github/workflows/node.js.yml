@@ -70,7 +70,6 @@ jobs:
 
   release:
     if: github.event_name == 'release' && github.event.action == 'created'
-    needs: [build]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -95,7 +94,7 @@ jobs:
       - run: |
           {
             echo -n "OUT_PATH="
-            nix-build --argstr 'releaseVer' "$PACKAGE_VERSION"
+            nix-build --argstr 'releaseVer' "$PACKAGE_VERSION" package.nix
           } >> "$GITHUB_ENV"
         env:
           PACKAGE_VERSION: ${{ github.ref_name }}
