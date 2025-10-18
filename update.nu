@@ -1,5 +1,5 @@
 #!/usr/bin/env nix-shell
-#!nix-shell -i nu -p nushell
+#!nix-shell --arg nixpkgs 'import (builtins.fetchGit (builtins.fromJSON (builtins.readFile ./nixpkgs-rev.json)) ) {}' -i nu -p nushell git
 
 const file = "nixpkgs-rev.json"
 
