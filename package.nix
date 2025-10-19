@@ -1,5 +1,4 @@
 {
-  stdenv ? pkgs.stdenv,
   pkgs ? import (builtins.fetchGit (builtins.fromJSON (builtins.readFile ./nixpkgs-rev.json)) ) {},
   releaseVer ? null
 }:
@@ -24,12 +23,36 @@ let
         ! -iname 'pcre2_printint.c' \
         ! -iname 'pcre2_ucptables.c' \
         ! -path '*/sljit/*' \
-        | xargs)
+        | sort | xargs)
 
-      $CC -DPCRE2_CODE_UNIT_WIDTH=8 $(./pcre2-config --cflags | xargs) -include src/config.h -include src/pcre2_internal.h $cfiles -nostartfiles -Wl,--no-entry -O2 \
-      -Wl,--export-dynamic -static -fno-exceptions -fno-rtti -flto -Wl,--export=malloc -Wl,--export=free  -Wl,--export=pcre2_compile_8 \
-      -Wl,--export=pcre2_get_error_message_8 -Wl,--export=pcre2_match_data_create_from_pattern_8 -Wl,--export=pcre2_match_data_step_count -Wl,--export=pcre2_match_8 \
-      -Wl,--export=pcre2_match_data_free_8 --rtlib=compiler-rt -mno-bulk-memory -mno-exception-handling -mno-mutable-globals -mno-multimemory -o out.wasm
+      cflags="\
+        -DPCRE2_CODE_UNIT_WIDTH=8 \
+        -include src/config.h \
+        -include src/pcre2_internal.h
+        -O2 \
+        -nostartfiles \
+        -static \
+        -fno-exceptions \
+        -fno-rtti \
+        -flto \
+        --rtlib=compiler-rt \
+        -Wl,--no-entry \
+        -Wl,--export-dynamic \
+        -Wl,--export=malloc \
+        -Wl,--export=free \
+        -Wl,--export=pcre2_compile_8 \
+        -Wl,--export=pcre2_get_error_message_8 \
+        -Wl,--export=pcre2_match_data_create_from_pattern_8 \
+        -Wl,--export=pcre2_match_data_step_count \
+        -Wl,--export=pcre2_match_8 \
+        -Wl,--export=pcre2_match_data_free_8 \
+        -mno-bulk-memory \
+        -mno-exception-handling \
+        -mno-mutable-globals \
+        -mno-multimemory"
+
+      $CC $cfiles $(./pcre2-config --cflags) $cflags -o out.wasm
+
       runHook postBuild
     '';
 
