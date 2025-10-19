@@ -15,7 +15,17 @@ let
     buildPhase = ''
       runHook preBuild
       mv src/pcre2_chartables.c.dist src/pcre2_chartables.c
-      cfiles=$(find src -iname '*.c' ! -iname 'pcre2_fuzz*' ! -iname 'pcre2_jit*' -iname '*_*.c' ! -iname 'pcre2posix_test.c' ! -iname 'pcre2_printint.c' ! -iname 'pcre2_ucptables.c' ! -path '*/sljit/*' | xargs)
+
+      cfiles=$(find src \
+          -iname '*_*.c' \
+        ! -iname 'pcre2_fuzz*' \
+        ! -iname 'pcre2_jit*' \
+        ! -iname 'pcre2posix_test.c' \
+        ! -iname 'pcre2_printint.c' \
+        ! -iname 'pcre2_ucptables.c' \
+        ! -path '*/sljit/*' \
+        | xargs)
+
       $CC -DPCRE2_CODE_UNIT_WIDTH=8 $(./pcre2-config --cflags | xargs) -include src/config.h -include src/pcre2_internal.h $cfiles -nostartfiles -Wl,--no-entry -O2 \
       -Wl,--export-dynamic -static -fno-exceptions -fno-rtti -flto -Wl,--export=malloc -Wl,--export=free  -Wl,--export=pcre2_compile_8 \
       -Wl,--export=pcre2_get_error_message_8 -Wl,--export=pcre2_match_data_create_from_pattern_8 -Wl,--export=pcre2_match_data_step_count -Wl,--export=pcre2_match_8 \
