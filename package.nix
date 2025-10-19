@@ -1,13 +1,13 @@
-{
-  pkgs ? import (builtins.fetchGit (builtins.fromJSON (builtins.readFile ./nixpkgs-rev.json)) ) {},
-  releaseVer ? null
-}:
+{ pkgs ? import
+  (builtins.fetchGit (builtins.fromJSON (builtins.readFile ./nixpkgs-rev.json)))
+  { }, releaseVer ? null }:
 let
   inherit (pkgs) lib runCommand buildNpmPackage pcre2 nodejs writeTextFile;
   pcre2-wasm = pkgs.pkgsCross.wasi32.stdenv.mkDerivation {
     pname = "pcre2-wasm";
     inherit (pcre2) version src;
-    configureFlags = ["--disable-pcre2grep-jit" "--disable-pcre2grep-callout"];
+    configureFlags =
+      [ "--disable-pcre2grep-jit" "--disable-pcre2grep-callout" ];
     patches = [ ./patches/counter.patch ];
 
     dontFixup = true;
@@ -68,23 +68,22 @@ let
   };
   versionFile = writeTextFile {
     name = "pcre2-version.json";
-    text = builtins.toJSON {
-      "version" = pcre2.version;
-    };
+    text = builtins.toJSON { "version" = pcre2.version; };
   };
-  pcre2webVersion = if releaseVer == null then packageTemplate.version else lib.strings.removePrefix "v" releaseVer;
-  packageTemplate = builtins.fromJSON (builtins.readFile ./src/package.template.json);
+  pcre2webVersion = if releaseVer == null then
+    packageTemplate.version
+  else
+    lib.strings.removePrefix "v" releaseVer;
+  packageTemplate =
+    builtins.fromJSON (builtins.readFile ./src/package.template.json);
   packageJson = writeTextFile {
     name = "package.json";
-    text = builtins.toJSON ( packageTemplate // { version = pcre2webVersion; });
+    text = builtins.toJSON (packageTemplate // { version = pcre2webVersion; });
   };
-in
-buildNpmPackage (finalAttrs: {
+in buildNpmPackage (finalAttrs: {
   name = "pcre2-web";
   src = ./.;
-  npmDeps = pkgs.importNpmLock {
-    npmRoot = ./.;
-  };
+  npmDeps = pkgs.importNpmLock { npmRoot = ./.; };
   npmConfigHook = pkgs.importNpmLock.npmConfigHook;
 
   buildPhase = ''
