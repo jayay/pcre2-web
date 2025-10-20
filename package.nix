@@ -82,7 +82,19 @@ let
   };
 in buildNpmPackage (finalAttrs: {
   name = "pcre2-web";
-  src = ./.;
+  src = lib.fileset.toSource {
+    root = ./.;
+    fileset = lib.fileset.traceVal (lib.fileset.unions [
+      ./.npmrc
+      ./.mocharc.json
+      ./pkg
+      ./src
+      ./tsconfig.json
+      ./package.json
+      ./package-lock.json
+    ]);
+  };
+
   npmDeps = pkgs.importNpmLock { npmRoot = ./.; };
   npmConfigHook = pkgs.importNpmLock.npmConfigHook;
 
