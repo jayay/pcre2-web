@@ -16,16 +16,7 @@ jobs:
             keep-env-derivations = true
             keep-outputs = true
 
-      - name: Restore and save Nix store
-        uses: nix-community/cache-nix-action@v6
-        with:
-          primary-key: updater-${{ runner.os }}-${{ hashFiles('update.nu') }}
-          restore-prefixes-first-match: updater-${{ runner.os }}-
-          purge-prefixes: updater-${{ runner.os }}-${{ hashFiles('update.nu') }}
-
-      - run: nix-channel --add https://nixos.org/channels/nixpkgs-unstable nixpkgs
-      - run: nix-channel --update nixpkgs
-      - run: ./update.nu
+      - run: nix flake update
 
       - uses: gr2m/create-or-update-pull-request-action@v1
         env:
@@ -34,7 +25,7 @@ jobs:
           title: "Update nixpkgs"
           body: "Updates nixpkgs to latest commit"
           branch: "update-nixpkgs"
-          path: "nixpkgs-rev.json"
+          path: "flake.lock"
           commit-message: "Update to latest nixpkgs revision"
           assignees: jayay
           auto-merge: rebase
