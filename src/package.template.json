@@ -2,15 +2,9 @@
   "name": "@jayay/pcre2-web",
   "repository": "git://github.com/jayay/pcre2-web.git",
   "description": "libpcre2 brought to the web using WASM.",
-  "version": "0.5.0",
-  "scripts": {
-  },
-  "keywords": [
-    "libpcre2",
-    "pcre",
-    "regex",
-    "wasm"
-  ],
+  "version": "dev-main",
+  "scripts": {},
+  "keywords": ["libpcre2", "pcre", "regex", "wasm"],
   "author": "Jakob Jungmann",
   "license": "BSD-3-Clause",
   "devDependencies": {
@@ -26,7 +20,7 @@
   ],
   "type": "module",
   "publishConfig": {
-    "registry":"https://npm.pkg.github.com"
+    "registry": "https://npm.pkg.github.com"
   },
   "main": "loader.js",
   "sideEffects": false

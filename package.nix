@@ -1,5 +1,4 @@
 {
-  lib,
   pcre2,
   buildNpmPackage,
   nodejs,
@@ -8,7 +7,6 @@
   binaryen,
   pkgsCross,
   importNpmLock,
-  releaseVer ? null
 }:
 let
   pcre2-wasm = pkgsCross.wasi32.stdenv.mkDerivation {
@@ -78,16 +76,6 @@ let
     name = "pcre2-version.json";
     text = builtins.toJSON { "version" = pcre2.version; };
   };
-  pcre2webVersion = if releaseVer == null then
-    packageTemplate.version
-  else
-    lib.strings.removePrefix "v" releaseVer;
-  packageTemplate =
-    builtins.fromJSON (builtins.readFile ./src/package.template.json);
-  packageJson = writeTextFile {
-    name = "package.json";
-    text = builtins.toJSON (packageTemplate // { version = pcre2webVersion; });
-  };
 in buildNpmPackage {
   name = "pcre2-web";
   src = ./.;
@@ -104,7 +92,7 @@ in buildNpmPackage {
   postBuild = ''
     cp -R ${pcre2-wasm}/out.wasm pkg/
     cp ${versionFile} pkg/pcre2-version.json
-    cp ${packageJson} pkg/package.json
+    cp ${./src/package.template.json} pkg/package.json
   '';
 
   installPhase = ''
