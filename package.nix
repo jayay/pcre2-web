@@ -1,9 +1,15 @@
-{ pkgs ? import
-  (builtins.fetchGit (builtins.fromJSON (builtins.readFile ./nixpkgs-rev.json)))
-  { }, releaseVer ? null }:
+{
+  pcre2,
+  buildNpmPackage,
+  nodejs,
+  writeTextFile,
+  wabt,
+  binaryen,
+  pkgsCross,
+  importNpmLock,
+}:
 let
-  inherit (pkgs) lib runCommand buildNpmPackage pcre2 nodejs writeTextFile;
-  pcre2-wasm = pkgs.pkgsCross.wasi32.stdenv.mkDerivation {
+  pcre2-wasm = pkgsCross.wasi32.stdenv.mkDerivation {
     pname = "pcre2-wasm";
     inherit (pcre2) version src;
     configureFlags =
@@ -58,7 +64,7 @@ let
 
     postBuild = ''
       # todo: use -mno-reference-types in later clang version
-      ${pkgs.binaryen}/bin/wasm-opt --remove-imports --monomorphize --directize out.wasm -o out.wasm
+      ${binaryen}/bin/wasm-opt --remove-imports --monomorphize --directize out.wasm -o out.wasm
     '';
 
     installPhase = ''
@@ -70,33 +76,12 @@ let
     name = "pcre2-version.json";
     text = builtins.toJSON { "version" = pcre2.version; };
   };
-  pcre2webVersion = if releaseVer == null then
-    packageTemplate.version
-  else
-    lib.strings.removePrefix "v" releaseVer;
-  packageTemplate =
-    builtins.fromJSON (builtins.readFile ./src/package.template.json);
-  packageJson = writeTextFile {
-    name = "package.json";
-    text = builtins.toJSON (packageTemplate // { version = pcre2webVersion; });
-  };
-in buildNpmPackage (finalAttrs: {
+in buildNpmPackage {
   name = "pcre2-web";
-  src = lib.fileset.toSource {
-    root = ./.;
-    fileset = lib.fileset.traceVal (lib.fileset.unions [
-      ./.npmrc
-      ./.mocharc.json
-      ./pkg
-      ./src
-      ./tsconfig.json
-      ./package.json
-      ./package-lock.json
-    ]);
-  };
+  src = ./.;
 
-  npmDeps = pkgs.importNpmLock { npmRoot = ./.; };
-  npmConfigHook = pkgs.importNpmLock.npmConfigHook;
+  npmDeps = importNpmLock { npmRoot = ./.; };
+  npmConfigHook = importNpmLock.npmConfigHook;
 
   buildPhase = ''
     runHook preBuild
@@ -107,7 +92,7 @@ in buildNpmPackage (finalAttrs: {
   postBuild = ''
     cp -R ${pcre2-wasm}/out.wasm pkg/
     cp ${versionFile} pkg/pcre2-version.json
-    cp ${packageJson} pkg/package.json
+    cp ${./src/package.template.json} pkg/package.json
   '';
 
   installPhase = ''
@@ -118,9 +103,7 @@ in buildNpmPackage (finalAttrs: {
 
   doCheck = true;
   checkPhase = ''
-    ${pkgs.wabt}/bin/wasm-validate --disable-mutable-globals --disable-bulk-memory pkg/out.wasm
-    ${pkgs.nodejs}/bin/node --experimental-wasm-modules node_modules/mocha/bin/_mocha
+    ${wabt}/bin/wasm-validate --disable-mutable-globals pkg/out.wasm
+    ${nodejs}/bin/node --experimental-wasm-modules node_modules/mocha/bin/_mocha
   '';
-
-  passthru.updateScript = ./update.nu;
-})
+}
