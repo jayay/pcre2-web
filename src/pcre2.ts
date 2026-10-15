@@ -75,6 +75,9 @@ export class PCRE2 {
             wasm.free(re_ptr);
             throw new Error(message);
         }
+        wasm.free(err_ptr);
+        wasm.free(err_offset_ptr);
+        wasm.free(re_ptr);
         return new PCRE2(regexp, err_buf_ptr, re_comp_ptr);
     }
 
@@ -108,6 +111,7 @@ export class PCRE2 {
 
         if (rc === PCRE2_ERROR_NOMATCH) {
             match_data_result.steps = wasm.pcre2_match_data_step_count(match_data);
+            wasm.pcre2_match_data_free_8(match_data);
             return false
         } else if (rc < 0) {
             const err_len = wasm.pcre2_get_error_message_8(rc, this.err_buf, 256);
