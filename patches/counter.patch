@@ -1,40 +1,55 @@
 diff --git a/src/pcre2_intmodedep.h b/src/pcre2_intmodedep.h
-index 390e737..fb43ddb 100644
+index 6cefb61..640eed5 100644
 --- a/src/pcre2_intmodedep.h
 +++ b/src/pcre2_intmodedep.h
-@@ -665,6 +665,7 @@ typedef struct pcre2_real_match_data {
-   uint8_t          flags;            /* Various flags */
+@@ -727,6 +727,7 @@ typedef struct pcre2_real_match_data {
    uint16_t         oveccount;        /* Number of pairs */
+   uint32_t         options;          /* Options passed in to the match call */
    int              rc;               /* The return code from the match */
 +  uint32_t         match_call_count;
    PCRE2_SIZE       ovector[131072];  /* Must be last in the structure */
  } pcre2_real_match_data;
- 
+
 diff --git a/src/pcre2_match.c b/src/pcre2_match.c
-index a396060..1267ace 100644
+index d5574d7..b0f24ed 100644
 --- a/src/pcre2_match.c
 +++ b/src/pcre2_match.c
-@@ -7475,6 +7475,7 @@ if (utf && end_subject != true_end_subject &&
+@@ -7023,6 +7023,13 @@ pcre2_callout_block cb;
+ match_block actual_match_block;
+ match_block *mb = &actual_match_block;
+
++/* Ensure match_call_count starts at a known value: several "quick reject"
++bumpalong-loop checks below can break out of the loop and jump to ENDLOOP
++without ever calling match(), which is what normally resets this field to 0
++before counting backtracks for a match attempt. Leaving it uninitialized
++means the step count reported for those quick-reject cases is stack garbage. */
++mb->match_call_count = 0;
++
+ /* Recognize NULL, length 0 as an empty string. */
+
+ if (subject == NULL && length == 0) subject = null_str;
+@@ -8158,6 +8165,7 @@ if (utf && end_subject != true_end_subject &&
  match_data->code = re;
  match_data->mark = mb->mark;
  match_data->matchedby = PCRE2_MATCHEDBY_INTERPRETER;
 +match_data->match_call_count = mb->match_call_count;
- 
+ match_data->options = original_options;
+
  /* Handle a fully successful match. Set the return code to the number of
- captured strings, or 0 if there were too many to fit into the ovector, and then
 diff --git a/src/pcre2_match_data.c b/src/pcre2_match_data.c
-index b34b999..dcb0953 100644
+index fade67a..8c478fa 100644
 --- a/src/pcre2_match_data.c
 +++ b/src/pcre2_match_data.c
-@@ -107,6 +107,11 @@ if (match_data != NULL)
+@@ -108,6 +108,12 @@ if (match_data != NULL)
    }
  }
- 
+
 +PCRE2_EXP_DEFN uint32_t PCRE2_CALL_CONVENTION
 +pcre2_match_data_step_count(pcre2_match_data *match_data)
 +{
 +    return match_data->match_call_count;
 +}
- 
- 
++
+
+
  /*************************************************

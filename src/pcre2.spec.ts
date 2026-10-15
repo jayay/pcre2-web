@@ -51,4 +51,28 @@ describe("pcre2 bindings", () => {
     assert.ok(!pcre2.test("01234z", 0, match));
     assert.deepStrictEqual(match, {steps: 81});
   });
+
+  it("Reports zero steps when the subject is rejected before any match attempt", () => {
+    // "asdd" has a minimum match length of 4, so PCRE2 rejects a 3-character
+    // subject on a length check alone, without ever entering the matching
+    // loop that normally resets and counts match_call_count. Regression test
+    // for a bug where this path reported leftover/uninitialized step counts
+    // instead of 0.
+    const pcre2 = pcre.PCRE2.create("asdd");
+    const match = {};
+    assert.ok(!pcre2.test("asd", 0, match));
+    assert.deepStrictEqual(match, {steps: 0});
+  });
+
+  it("Reports a stable step count across repeated calls", () => {
+    // Regression test: the uninitialized-counter bug caused the reported
+    // step count to grow with each call instead of staying consistent for
+    // the same regex/subject pair.
+    const pcre2 = pcre.PCRE2.create("asdd");
+    for (let i = 0; i < 5; i++) {
+      const match = {};
+      assert.ok(!pcre2.test("asd", 0, match));
+      assert.deepStrictEqual(match, {steps: 0});
+    }
+  });
 });
